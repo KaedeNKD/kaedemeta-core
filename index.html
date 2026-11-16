@@ -7,7 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         /* =====================================================================
-           1. Zenith Modern Design Tokens & Glass Bevel System
+           1. Fluid Glass & Tactile Spring Tokens
            ===================================================================== */
         :root {
             --accent: #8b5cf6;
@@ -19,24 +19,28 @@
             --danger: #ef4444;
             --sidebar-w: 56px;
             --topbar-h: 56px;
-            --radius-panel: 12px;
-            --radius-card: 10px;
+            --radius-panel: 14px;
+            --radius-card: 12px;
             --font-mono: "JetBrains Mono", "Cascadia Code", "Consolas", monospace;
+            --spring-snappy: cubic-bezier(0.34, 1.48, 0.64, 1);
+            --spring-smooth: cubic-bezier(0.22, 1, 0.36, 1);
             --transition-theme: background-color 0.55s cubic-bezier(0.22, 1, 0.36, 1),
                                 color 0.35s ease,
                                 border-color 0.35s ease;
         }
 
         html[data-theme="dark"] {
-            --bg-canvas: #090b10;
-            --bg-sidebar: rgba(16, 19, 27, 0.86);
-            --bg-surface: rgba(20, 23, 33, 0.78);
-            --bg-elevated: rgba(27, 31, 44, 0.72);
-            --bg-input: rgba(11, 13, 19, 0.88);
-            --bg-popover: rgba(18, 21, 31, 0.96);
+            --bg-canvas: #080a0f;
+            --bg-sidebar: rgba(15, 18, 26, 0.86);
+            --bg-surface: rgba(19, 22, 32, 0.76);
+            --bg-elevated: rgba(26, 30, 43, 0.72);
+            --bg-island: rgba(22, 26, 38, 0.88);
+            --bg-input: rgba(10, 12, 18, 0.86);
+            --bg-popover: rgba(17, 20, 30, 0.96);
             --border-subtle: rgba(255, 255, 255, 0.085);
             --border-hover: rgba(255, 255, 255, 0.18);
-            --glass-bevel: inset 0 1px 0 rgba(255, 255, 255, 0.075);
+            --specular-top: rgba(255, 255, 255, 0.14);
+            --glass-bevel: inset 0 1px 0 var(--specular-top), 0 18px 42px rgba(0, 0, 0, 0.42);
             --text-primary: #f9fafb;
             --text-secondary: #9ca3af;
             --text-tertiary: #6b7280;
@@ -47,18 +51,20 @@
         }
 
         html[data-theme="light"] {
-            --bg-canvas: #f5f6fa;
-            --bg-sidebar: #eef0f6;
-            --bg-surface: #ffffff;
+            --bg-canvas: #f4f5f9;
+            --bg-sidebar: #eceef5;
+            --bg-surface: rgba(255, 255, 255, 0.94);
             --bg-elevated: #f8f9fc;
-            --bg-input: #f2f4f8;
+            --bg-island: #ffffff;
+            --bg-input: #f1f3f8;
             --bg-popover: #ffffff;
-            --border-subtle: #e5e7eb;
+            --border-subtle: #e4e7ee;
             --border-hover: #cbd5e1;
-            --glass-bevel: inset 0 1px 0 rgba(255, 255, 255, 0.9);
-            --text-primary: #1f2937;
-            --text-secondary: #4b5563;
-            --text-tertiary: #9ca3af;
+            --specular-top: rgba(255, 255, 255, 0.95);
+            --glass-bevel: inset 0 1px 0 var(--specular-top), 0 10px 28px rgba(15, 23, 42, 0.06);
+            --text-primary: #18181b;
+            --text-secondary: #52525b;
+            --text-tertiary: #8e8e98;
             --row-hover: rgba(0, 0, 0, 0.04);
             --shadow-card: 0 8px 24px rgba(15, 23, 42, 0.05);
             --neon-opacity: 0;
@@ -72,14 +78,15 @@
             padding: 0;
             height: 100%;
             overflow: hidden;
-            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
             background: var(--bg-canvas);
             color: var(--text-primary);
             transition: var(--transition-theme);
+            -webkit-font-smoothing: antialiased;
         }
 
         /* =====================================================================
-           2. Ambient Layer: Dark Flowing Neon vs Light Subtle Tint
+           2. Ambient Stage: Slow Obsidian Aurora vs Subtle Daylight Tint
            ===================================================================== */
         .ambient-stage {
             position: fixed;
@@ -99,54 +106,49 @@
         .neon-orb {
             position: absolute;
             border-radius: 50%;
-            filter: blur(95px);
+            filter: blur(100px);
             mix-blend-mode: screen;
-            will-change: transform, opacity;
+            will-change: transform;
         }
 
         .orb-violet {
-            width: 560px;
-            height: 560px;
-            top: -140px;
-            left: 14%;
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.34) 0%, rgba(139, 92, 246, 0) 70%);
-            animation: neonFloatA 18s ease-in-out infinite alternate;
+            width: 580px;
+            height: 580px;
+            top: -160px;
+            left: 16%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.30) 0%, rgba(139, 92, 246, 0) 70%);
+            animation: neonFloatA 22s ease-in-out infinite alternate;
         }
 
         .orb-cyan {
-            width: 500px;
-            height: 500px;
-            bottom: -120px;
+            width: 520px;
+            height: 520px;
+            bottom: -140px;
             right: 10%;
-            background: radial-gradient(circle, rgba(6, 182, 212, 0.26) 0%, rgba(6, 182, 212, 0) 70%);
-            animation: neonFloatB 22s ease-in-out infinite alternate;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.22) 0%, rgba(6, 182, 212, 0) 70%);
+            animation: neonFloatB 26s ease-in-out infinite alternate;
         }
 
         .orb-magenta {
-            width: 420px;
-            height: 420px;
-            top: 32%;
+            width: 440px;
+            height: 440px;
+            top: 34%;
             right: 26%;
-            background: radial-gradient(circle, rgba(217, 70, 239, 0.20) 0%, rgba(217, 70, 239, 0) 70%);
-            animation: neonFloatC 25s ease-in-out infinite alternate;
+            background: radial-gradient(circle, rgba(217, 70, 239, 0.16) 0%, rgba(217, 70, 239, 0) 70%);
+            animation: neonFloatC 30s ease-in-out infinite alternate;
         }
 
         @keyframes neonFloatA {
             0%   { transform: translate3d(0, 0, 0) scale(1); }
-            50%  { transform: translate3d(90px, 50px, 0) scale(1.12); }
-            100% { transform: translate3d(-40px, 95px, 0) scale(0.95); }
+            100% { transform: translate3d(60px, 70px, 0) scale(1.08); }
         }
-
         @keyframes neonFloatB {
             0%   { transform: translate3d(0, 0, 0) scale(1); }
-            50%  { transform: translate3d(-110px, -45px, 0) scale(1.15); }
-            100% { transform: translate3d(40px, -85px, 0) scale(0.92); }
+            100% { transform: translate3d(-70px, -60px, 0) scale(1.1); }
         }
-
         @keyframes neonFloatC {
-            0%   { transform: translate3d(0, 0, 0) scale(0.95); opacity: 0.75; }
-            50%  { transform: translate3d(-75px, 60px, 0) scale(1.1); opacity: 1; }
-            100% { transform: translate3d(65px, -40px, 0) scale(0.98); opacity: 0.8; }
+            0%   { transform: translate3d(0, 0, 0) scale(0.96); }
+            100% { transform: translate3d(50px, -45px, 0) scale(1.05); }
         }
 
         .light-tint-layer {
@@ -155,13 +157,12 @@
             opacity: var(--light-tint-opacity);
             transition: opacity 0.7s ease;
             background:
-                radial-gradient(circle at 18% 0%, rgba(139, 92, 246, 0.085) 0%, transparent 52%),
-                radial-gradient(circle at 86% 12%, rgba(99, 102, 241, 0.065) 0%, transparent 48%),
-                linear-gradient(180deg, rgba(139, 92, 246, 0.035) 0%, transparent 40%);
+                radial-gradient(circle at 20% 0%, rgba(139, 92, 246, 0.08) 0%, transparent 52%),
+                radial-gradient(circle at 85% 12%, rgba(99, 102, 241, 0.06) 0%, transparent 48%);
         }
 
         /* =====================================================================
-           3. Shell Layout: Collapsible Sidebar + Main Viewport
+           3. Collapsible Sidebar & Shell
            ===================================================================== */
         .app-shell {
             position: relative;
@@ -177,14 +178,14 @@
             min-width: var(--sidebar-w);
             height: 100%;
             background: var(--bg-sidebar);
-            backdrop-filter: blur(22px);
-            -webkit-backdrop-filter: blur(22px);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             border-right: 1px solid var(--border-subtle);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: width 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-                        min-width 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+            transition: width 0.28s var(--spring-smooth),
+                        min-width 0.28s var(--spring-smooth),
                         var(--transition-theme);
             z-index: 20;
             user-select: none;
@@ -208,7 +209,7 @@
             width: 32px;
             height: 32px;
             min-width: 32px;
-            border-radius: 8px;
+            border-radius: 9px;
             background: linear-gradient(135deg, var(--accent), #6366f1);
             display: flex;
             align-items: center;
@@ -216,33 +217,28 @@
             color: #fff;
             font-weight: 800;
             font-size: 15px;
-            box-shadow: 0 4px 14px rgba(139, 92, 246, 0.38);
+            box-shadow: 0 4px 14px rgba(139, 92, 246, 0.36);
         }
 
         .brand-title {
             font-size: 14px;
             font-weight: 700;
-            letter-spacing: 0.4px;
+            letter-spacing: 0.3px;
             white-space: nowrap;
             opacity: 0;
-            transition: opacity 0.16s ease;
+            transition: opacity 0.18s ease;
         }
 
-        .sidebar.expanded .brand-title {
-            opacity: 1;
-        }
+        .sidebar.expanded .brand-title { opacity: 1; }
 
-        .sidebar-toggle-wrap {
-            padding: 4px 6px 10px;
-            flex-shrink: 0;
-        }
+        .sidebar-toggle-wrap { padding: 4px 6px 10px; flex-shrink: 0; }
 
         .sidebar-toggle-btn {
             width: 100%;
             height: 34px;
             border: none;
             background: transparent;
-            border-radius: 6px;
+            border-radius: 7px;
             color: var(--text-secondary);
             display: flex;
             align-items: center;
@@ -250,11 +246,7 @@
             cursor: pointer;
             transition: background 0.14s ease, color 0.14s ease;
         }
-
-        .sidebar-toggle-btn:hover {
-            background: var(--row-hover);
-            color: var(--text-primary);
-        }
+        .sidebar-toggle-btn:hover { background: var(--row-hover); color: var(--text-primary); }
 
         .nav-list {
             display: flex;
@@ -274,25 +266,16 @@
             align-items: center;
             cursor: pointer;
             color: var(--text-secondary);
-            transition: background 0.14s ease, color 0.14s ease;
+            transition: background 0.14s ease, color 0.14s ease, transform 0.14s var(--spring-snappy);
             border: none;
             background: transparent;
             padding: 0;
             width: 100%;
             text-align: left;
         }
-
-        .nav-item:hover {
-            background: var(--row-hover);
-            color: var(--text-primary);
-        }
-
-        .nav-item.active {
-            background: var(--accent-pill);
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
+        .nav-item:hover { background: var(--row-hover); color: var(--text-primary); }
+        .nav-item:active { transform: scale(0.97); }
+        .nav-item.active { background: var(--accent-pill); color: var(--text-primary); font-weight: 600; }
         .nav-item.active::before {
             content: "";
             position: absolute;
@@ -314,21 +297,15 @@
             justify-content: center;
             color: inherit;
         }
-
-        .nav-item.active .nav-icon-box {
-            color: var(--accent);
-        }
+        .nav-item.active .nav-icon-box { color: var(--accent); }
 
         .nav-label {
             font-size: 13px;
             white-space: nowrap;
             opacity: 0;
-            transition: opacity 0.16s ease;
+            transition: opacity 0.18s ease;
         }
-
-        .sidebar.expanded .nav-label {
-            opacity: 1;
-        }
+        .sidebar.expanded .nav-label { opacity: 1; }
 
         .sidebar-footer {
             padding: 10px 6px 14px;
@@ -339,7 +316,7 @@
         }
 
         /* =====================================================================
-           4. Main Viewport & Interactive Top Bar Account Hub
+           4. Top Bar & Tactile Account Hub
            ===================================================================== */
         .main-viewport {
             position: relative;
@@ -366,46 +343,38 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 14px;
+            font-size: 13.5px;
             font-weight: 600;
             letter-spacing: 0.2px;
+            color: var(--text-secondary);
         }
 
-        .top-actions {
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .top-actions { position: relative; display: flex; align-items: center; gap: 10px; }
 
         .account-pill-btn {
             height: 32px;
-            padding: 0 12px;
-            border-radius: 8px;
+            padding: 0 13px;
+            border-radius: 999px;
             font-size: 12px;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
             gap: 8px;
             cursor: pointer;
-            backdrop-filter: blur(12px);
-            transition: all 0.16s ease;
+            backdrop-filter: blur(16px);
+            transition: all 0.2s var(--spring-snappy);
             border: 1px solid var(--border-subtle);
             background: var(--bg-elevated);
             color: var(--text-secondary);
+            box-shadow: inset 0 1px 0 var(--specular-top);
         }
-
-        .account-pill-btn:hover {
-            border-color: var(--border-hover);
-            color: var(--text-primary);
-        }
-
+        .account-pill-btn:hover { border-color: var(--border-hover); color: var(--text-primary); transform: translateY(-0.5px); }
+        .account-pill-btn:active { transform: scale(0.96); }
         .account-pill-btn.active-key {
             color: var(--success);
             border-color: rgba(16, 185, 129, 0.35);
             background: rgba(16, 185, 129, 0.10);
         }
-
         .account-pill-btn.low-balance {
             color: var(--warning);
             border-color: rgba(245, 158, 11, 0.38);
@@ -421,41 +390,40 @@
 
         .account-popover {
             position: absolute;
-            top: 40px;
+            top: 42px;
             right: 0;
             width: 300px;
             background: var(--bg-popover);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
             border: 1px solid var(--border-hover);
-            border-radius: var(--radius-card);
-            box-shadow: var(--shadow-card), var(--glass-bevel);
+            border-radius: 14px;
+            box-shadow: var(--glass-bevel);
             padding: 16px;
             display: none;
             flex-direction: column;
             gap: 12px;
             z-index: 100;
+            transform-origin: top right;
         }
-
         .account-popover.open {
             display: flex;
-            animation: fadeSlideIn 0.16s ease;
+            animation: springPopIn 0.22s var(--spring-snappy);
         }
 
-        .popover-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 12px;
+        @keyframes springPopIn {
+            from { opacity: 0; transform: scale(0.94) translateY(-6px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
         }
 
+        .popover-row { display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
         .popover-mono {
             font-family: var(--font-mono);
             font-size: 11.5px;
             color: var(--text-primary);
             background: var(--bg-input);
-            padding: 6px 10px;
-            border-radius: 6px;
+            padding: 7px 10px;
+            border-radius: 8px;
             border: 1px solid var(--border-subtle);
             word-break: break-all;
         }
@@ -474,7 +442,7 @@
         }
 
         /* =====================================================================
-           5. Scrollable Stage Container
+           5. Stage Viewport
            ===================================================================== */
         .stage-wrapper {
             position: relative;
@@ -483,10 +451,10 @@
             margin: 0 20px 20px;
             border-radius: var(--radius-panel);
             background: var(--bg-surface);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+            backdrop-filter: blur(26px);
+            -webkit-backdrop-filter: blur(26px);
             border: 1px solid var(--border-subtle);
-            box-shadow: var(--shadow-card), var(--glass-bevel);
+            box-shadow: var(--glass-bevel);
             overflow-y: auto;
             overflow-x: hidden;
             padding: 28px;
@@ -495,46 +463,442 @@
 
         .stage-wrapper::-webkit-scrollbar { width: 7px; }
         .stage-wrapper::-webkit-scrollbar-track { background: transparent; }
-        .stage-wrapper::-webkit-scrollbar-thumb {
-            background: rgba(139, 92, 246, 0.30);
-            border-radius: 999px;
-        }
-        .stage-wrapper::-webkit-scrollbar-thumb:hover {
-            background: rgba(139, 92, 246, 0.55);
-        }
+        .stage-wrapper::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.28); border-radius: 999px; }
+        .stage-wrapper::-webkit-scrollbar-thumb:hover { background: rgba(139, 92, 246, 0.52); }
 
         .view-section {
             display: none;
             max-width: 1120px;
             margin: 0 auto;
-            animation: fadeSlideIn 0.22s ease;
+            animation: sectionReveal 0.24s var(--spring-smooth);
         }
+        .view-section.active { display: block; }
 
-        .view-section.active {
-            display: block;
-        }
-
-        @keyframes fadeSlideIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes sectionReveal {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
         /* =====================================================================
-           6. Workbench Controls, Sample Pills & Telemetry HUD
+           6. Dynamic Command Island & Specular Spotlight Hero
            ===================================================================== */
-        .section-header {
-            margin-bottom: 22px;
+        .workbench-hero {
+            text-align: center;
+            max-width: 780px;
+            margin: 6px auto 24px;
+            transition: all 0.35s var(--spring-smooth);
         }
-        .section-header h1 {
-            margin: 0 0 6px;
-            font-size: 1.55rem;
-            letter-spacing: -0.02em;
+
+        .workbench-hero.compact {
+            margin: 0 auto 16px;
         }
-        .section-header p {
-            margin: 0;
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--accent);
+            background: var(--accent-soft);
+            border: 1px solid rgba(139, 92, 246, 0.26);
+            margin-bottom: 12px;
+        }
+
+        .workbench-hero.compact .hero-eyebrow {
+            display: none;
+        }
+
+        .hero-title {
+            margin: 0 0 8px;
+            font-size: 1.95rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+        }
+
+        .workbench-hero.compact .hero-title {
+            font-size: 1.45rem;
+            margin-bottom: 4px;
+        }
+
+        .hero-subtitle {
+            margin: 0 auto;
+            max-width: 600px;
+            font-size: 0.93rem;
             color: var(--text-secondary);
-            font-size: 0.92rem;
+            line-height: 1.55;
         }
+
+        /* Dynamic Command Island Container */
+        .command-island-wrap {
+            max-width: 820px;
+            margin: 0 auto 24px;
+        }
+
+        .command-island {
+            position: relative;
+            border-radius: 18px;
+            background: var(--bg-island);
+            border: 1px solid var(--border-hover);
+            box-shadow: var(--glass-bevel);
+            padding: 8px;
+            transition: transform 0.26s var(--spring-snappy),
+                        border-color 0.24s ease,
+                        box-shadow 0.28s ease;
+            overflow: hidden;
+        }
+
+        .command-island::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            background: radial-gradient(
+                420px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+                rgba(139, 92, 246, 0.14),
+                transparent 70%
+            );
+        }
+
+        .command-island:hover::before,
+        .command-island:focus-within::before {
+            opacity: 1;
+        }
+
+        .command-island:focus-within {
+            border-color: rgba(139, 92, 246, 0.55);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.14), var(--glass-bevel);
+            transform: translateY(-1px);
+        }
+
+        /* Processing Rim Shimmer during extraction */
+        .command-island.is-extracting {
+            border-color: rgba(139, 92, 246, 0.65);
+        }
+        .command-island.is-extracting::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: -40%;
+            width: 40%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), #38bdf8, transparent);
+            animation: islandProgressSweep 1.1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        @keyframes islandProgressSweep {
+            0%   { left: -40%; }
+            100% { left: 100%; }
+        }
+
+        .island-main-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 48px;
+        }
+
+        .platform-morph-badge {
+            height: 40px;
+            padding: 0 12px;
+            border-radius: 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all 0.22s var(--spring-snappy);
+            user-select: none;
+        }
+
+        .platform-morph-badge:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+        }
+
+        .platform-morph-badge.detected {
+            color: var(--accent);
+            border-color: rgba(139, 92, 246, 0.36);
+            background: var(--accent-soft);
+            transform: scale(1.02);
+        }
+
+        .island-target-input {
+            flex: 1;
+            min-width: 0;
+            height: 42px;
+            border: none !important;
+            background: transparent !important;
+            color: var(--text-primary);
+            font-size: 14px;
+            padding: 0 8px;
+            outline: none;
+        }
+
+        .island-target-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .island-action-btn {
+            height: 42px;
+            padding: 0 20px;
+            border-radius: 12px;
+            border: none;
+            background: var(--accent);
+            color: #fff;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            transition: transform 0.18s var(--spring-snappy),
+                        background-color 0.16s ease,
+                        box-shadow 0.2s ease;
+            box-shadow: 0 4px 14px rgba(139, 92, 246, 0.34);
+        }
+
+        .island-action-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-0.5px);
+        }
+
+        .island-action-btn:active {
+            transform: scale(0.96);
+        }
+
+        .island-action-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Connected Morph Drawer inside Command Island */
+        .island-sub-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px 6px 2px;
+            margin-top: 6px;
+            border-top: 1px solid var(--border-subtle);
+            font-size: 12px;
+        }
+
+        .preset-pills-group {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .micro-pill {
+            height: 26px;
+            padding: 0 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            font-size: 11.5px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.18s var(--spring-snappy);
+        }
+        .micro-pill:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+            background: var(--accent-soft);
+            transform: translateY(-0.5px);
+        }
+        .micro-pill:active {
+            transform: scale(0.95);
+        }
+
+        .drawer-toggle-pill {
+            height: 26px;
+            padding: 0 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border-subtle);
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.16s ease;
+        }
+        .drawer-toggle-pill:hover {
+            background: var(--row-hover);
+            color: var(--text-primary);
+        }
+
+        .island-drawer {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.28s var(--spring-smooth), opacity 0.22s ease;
+            opacity: 0;
+        }
+        .island-drawer.open {
+            grid-template-rows: 1fr;
+            opacity: 1;
+        }
+        .island-drawer-inner {
+            overflow: hidden;
+        }
+        .island-drawer-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 0.7fr auto;
+            gap: 10px;
+            padding: 12px 6px 4px;
+            align-items: end;
+        }
+        @media (max-width: 860px) {
+            .island-drawer-grid { grid-template-columns: 1fr; }
+        }
+
+        /* =====================================================================
+           7. Interactive Showcase (Zero-Empty-State with Mercury Tab Slider)
+           ===================================================================== */
+        .showcase-container {
+            max-width: 820px;
+            margin: 0 auto;
+        }
+
+        .capability-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        @media (max-width: 760px) {
+            .capability-strip { grid-template-columns: 1fr; }
+        }
+
+        .cap-card {
+            position: relative;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--glass-bevel);
+            border-radius: var(--radius-card);
+            padding: 14px 16px;
+            transition: transform 0.22s var(--spring-snappy), border-color 0.2s ease;
+            overflow: hidden;
+        }
+        .cap-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--border-hover);
+        }
+        .cap-card-head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+        .cap-card p {
+            margin: 0;
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .showcase-panel {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--glass-bevel);
+            border-radius: 14px;
+            padding: 16px 18px;
+        }
+
+        .showcase-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        /* Mercury Sliding Segmented Control */
+        .mercury-tabs {
+            position: relative;
+            display: inline-flex;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: 9px;
+            padding: 3px;
+            gap: 2px;
+        }
+        .mercury-glider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            height: calc(100% - 6px);
+            border-radius: 7px;
+            background: var(--accent);
+            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.35);
+            transition: transform 0.28s var(--spring-snappy), width 0.28s var(--spring-snappy);
+            pointer-events: none;
+            z-index: 1;
+        }
+        .mercury-tab-btn {
+            position: relative;
+            z-index: 2;
+            height: 28px;
+            padding: 0 12px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: color 0.18s ease;
+        }
+        .mercury-tab-btn.active {
+            color: #fff;
+        }
+
+        .showcase-preview-box {
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 14px 16px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            line-height: 1.58;
+            color: var(--text-secondary);
+            overflow-x: auto;
+            margin: 0;
+            animation: sectionReveal 0.18s ease;
+        }
+
+        /* =====================================================================
+           8. Standard Controls, Results Grid & Staggered Deal Animation
+           ===================================================================== */
+        .section-header { margin-bottom: 22px; }
+        .section-header h1 { margin: 0 0 6px; font-size: 1.55rem; letter-spacing: -0.02em; }
+        .section-header p { margin: 0; color: var(--text-secondary); font-size: 0.92rem; }
 
         .control-panel {
             background: var(--bg-elevated);
@@ -555,133 +919,62 @@
             .form-grid { grid-template-columns: 1fr; }
         }
 
-        .field {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .field label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
+        .field { display: flex; flex-direction: column; gap: 5px; }
+        .field label { font-size: 11.5px; font-weight: 600; color: var(--text-secondary); }
 
         input[type="text"], input[type="password"], input[type="email"], input[type="number"], select {
-            height: 38px;
-            padding: 0 12px;
+            height: 36px;
+            padding: 0 11px;
             border-radius: 8px;
             border: 1px solid var(--border-subtle);
             background: var(--bg-input);
             color: var(--text-primary);
-            font-size: 13px;
+            font-size: 12.5px;
             outline: none;
             transition: border-color 0.16s ease;
         }
-        input:focus, select:focus {
-            border-color: var(--accent);
-        }
+        input:focus, select:focus { border-color: var(--accent); }
 
-        .sample-bar {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 14px;
-            font-size: 12px;
-            color: var(--text-tertiary);
-        }
-
-        .sample-chip {
-            height: 26px;
-            padding: 0 10px;
-            border-radius: 6px;
-            border: 1px solid var(--border-subtle);
-            background: var(--bg-input);
-            color: var(--text-secondary);
-            font-size: 11.5px;
-            font-weight: 500;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.14s ease;
-        }
-        .sample-chip:hover {
-            border-color: var(--accent);
-            color: var(--text-primary);
-            background: var(--accent-soft);
-        }
-
-        .btn-row {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 10px;
-        }
+        .btn-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 
         .btn {
-            height: 38px;
-            padding: 0 16px;
-            border-radius: 8px;
+            height: 36px;
+            padding: 0 15px;
+            border-radius: 9px;
             border: none;
-            font-size: 13px;
+            font-size: 12.5px;
             font-weight: 600;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 7px;
-            transition: all 0.15s ease;
+            transition: transform 0.16s var(--spring-snappy), background-color 0.15s ease, border-color 0.15s ease;
         }
-        .btn-primary {
-            background: var(--accent);
-            color: #fff;
-        }
-        .btn-primary:hover {
-            background: var(--accent-hover);
-        }
-        .btn-primary:disabled {
-            opacity: 0.55;
-            cursor: not-allowed;
-        }
+        .btn:active { transform: scale(0.96); }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
         .btn-secondary {
             background: var(--bg-surface);
             color: var(--text-primary);
             border: 1px solid var(--border-subtle);
         }
-        .btn-secondary:hover {
-            border-color: var(--border-hover);
-            background: var(--row-hover);
-        }
-        .btn-success {
-            background: var(--success);
-            color: #fff;
-        }
+        .btn-secondary:hover { border-color: var(--border-hover); background: var(--row-hover); }
+        .btn-success { background: var(--success); color: #fff; }
 
         .toast-banner {
-            margin-top: 14px;
-            padding: 11px 14px;
-            border-radius: 8px;
-            font-size: 13px;
+            margin-top: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 12.5px;
             display: none;
+            animation: springPopIn 0.2s var(--spring-snappy);
         }
-        .toast-info {
-            background: rgba(139, 92, 246, 0.14);
-            border: 1px solid rgba(139, 92, 246, 0.34);
-            color: var(--accent);
-        }
-        .toast-success {
-            background: rgba(16, 185, 129, 0.14);
-            border: 1px solid rgba(16, 185, 129, 0.36);
-            color: var(--success);
-        }
-        .toast-error {
-            background: rgba(239, 68, 68, 0.14);
-            border: 1px solid rgba(239, 68, 68, 0.36);
-            color: var(--danger);
-        }
+        .toast-info { background: rgba(139, 92, 246, 0.14); border: 1px solid rgba(139, 92, 246, 0.34); color: var(--accent); }
+        .toast-success { background: rgba(16, 185, 129, 0.14); border: 1px solid rgba(16, 185, 129, 0.36); color: var(--success); }
+        .toast-error { background: rgba(239, 68, 68, 0.14); border: 1px solid rgba(239, 68, 68, 0.36); color: var(--danger); }
 
-        /* Live Telemetry Strip */
         .telemetry-hud {
             display: flex;
             align-items: center;
@@ -690,36 +983,16 @@
             gap: 12px;
             padding: 10px 16px;
             margin-bottom: 14px;
-            border-radius: 8px;
+            border-radius: 10px;
             background: var(--bg-input);
-            border: 1px solid rgba(139, 92, 246, 0.32);
+            border: 1px solid rgba(139, 92, 246, 0.30);
             font-family: var(--font-mono);
             font-size: 11.5px;
         }
-
-        .telemetry-metrics {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 14px;
-            color: var(--text-secondary);
-        }
-
-        .metric-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .metric-highlight {
-            color: var(--success);
-            font-weight: 700;
-        }
-
-        .metric-accent {
-            color: var(--accent);
-            font-weight: 700;
-        }
+        .telemetry-metrics { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; color: var(--text-secondary); }
+        .metric-item { display: inline-flex; align-items: center; gap: 6px; }
+        .metric-highlight { color: var(--success); font-weight: 700; }
+        .metric-accent { color: var(--accent); font-weight: 700; }
 
         .creator-card {
             display: flex;
@@ -734,14 +1007,10 @@
             border-radius: var(--radius-card);
             margin-bottom: 14px;
         }
-        .creator-meta {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .creator-meta { display: flex; align-items: center; gap: 12px; }
         .creator-avatar {
-            width: 46px;
-            height: 46px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             object-fit: cover;
             background: var(--bg-input);
@@ -756,7 +1025,7 @@
             gap: 10px;
             margin-bottom: 16px;
             padding: 10px 14px;
-            border-radius: 8px;
+            border-radius: 10px;
             background: var(--bg-elevated);
             border: 1px solid var(--border-subtle);
         }
@@ -765,7 +1034,7 @@
             display: inline-flex;
             background: var(--bg-input);
             border: 1px solid var(--border-subtle);
-            border-radius: 7px;
+            border-radius: 8px;
             padding: 2px;
         }
         .seg-btn {
@@ -776,14 +1045,11 @@
             color: var(--text-secondary);
             font-size: 11.5px;
             font-weight: 600;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.14s ease;
+            transition: all 0.16s ease;
         }
-        .seg-btn.active {
-            background: var(--accent);
-            color: #fff;
-        }
+        .seg-btn.active { background: var(--accent); color: #fff; }
 
         .posts-grid {
             display: grid;
@@ -800,15 +1066,18 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            transition: border-color 0.15s ease, transform 0.15s ease;
+            transition: border-color 0.16s ease, transform 0.2s var(--spring-snappy);
+            animation: cardDealIn 0.32s var(--spring-snappy) backwards;
+            animation-delay: calc(var(--stagger-idx, 0) * 24ms);
         }
-        .post-card:hover {
-            border-color: var(--border-hover);
+
+        @keyframes cardDealIn {
+            from { opacity: 0; transform: translateY(12px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
         }
-        .post-card.selected {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 1px var(--accent);
-        }
+
+        .post-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+        .post-card.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), var(--glass-bevel); }
 
         .select-badge {
             position: absolute;
@@ -817,7 +1086,7 @@
             z-index: 3;
             width: 22px;
             height: 22px;
-            border-radius: 6px;
+            border-radius: 7px;
             background: rgba(12, 14, 19, 0.74);
             border: 1.5px solid rgba(255, 255, 255, 0.5);
             display: flex;
@@ -825,11 +1094,10 @@
             justify-content: center;
             cursor: pointer;
             color: #fff;
+            transition: transform 0.16s var(--spring-snappy), background-color 0.15s ease;
         }
-        .post-card.selected .select-badge {
-            background: var(--accent);
-            border-color: var(--accent);
-        }
+        .select-badge:active { transform: scale(0.86); }
+        .post-card.selected .select-badge { background: var(--accent); border-color: var(--accent); }
 
         .asset-count-badge {
             position: absolute;
@@ -861,11 +1129,9 @@
             height: 100%;
             object-fit: cover;
             display: block;
-            transition: transform 0.25s ease;
+            transition: transform 0.3s var(--spring-smooth);
         }
-        .post-card:hover .thumb-box img {
-            transform: scale(1.03);
-        }
+        .post-card:hover .thumb-box img { transform: scale(1.04); }
 
         .zoom-trigger {
             position: absolute;
@@ -873,20 +1139,19 @@
             right: 8px;
             width: 28px;
             height: 28px;
-            border-radius: 6px;
+            border-radius: 7px;
             border: 1px solid rgba(255, 255, 255, 0.22);
-            background: rgba(12, 14, 19, 0.76);
+            background: rgba(12, 14, 19, 0.78);
             color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             opacity: 0;
-            transition: opacity 0.16s ease;
+            transition: opacity 0.16s ease, transform 0.16s var(--spring-snappy);
         }
-        .thumb-box:hover .zoom-trigger {
-            opacity: 1;
-        }
+        .thumb-box:hover .zoom-trigger { opacity: 1; }
+        .zoom-trigger:hover { transform: scale(1.08); }
 
         .card-body {
             padding: 12px;
@@ -905,20 +1170,12 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-        .card-sub {
-            font-family: var(--font-mono);
-            font-size: 10.5px;
-            color: var(--text-tertiary);
-        }
-        .card-actions {
-            display: flex;
-            gap: 6px;
-            margin-top: 4px;
-        }
+        .card-sub { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-tertiary); }
+        .card-actions { display: flex; gap: 6px; margin-top: 4px; }
         .card-actions a, .card-actions button {
             flex: 1;
             height: 30px;
-            border-radius: 6px;
+            border-radius: 7px;
             font-size: 11.5px;
             font-weight: 600;
             display: inline-flex;
@@ -927,7 +1184,9 @@
             gap: 5px;
             text-decoration: none;
             cursor: pointer;
+            transition: transform 0.15s var(--spring-snappy);
         }
+        .card-actions a:active, .card-actions button:active { transform: scale(0.95); }
 
         .json-inspector-box {
             display: none;
@@ -944,13 +1203,10 @@
             font-size: 12px;
             line-height: 1.55;
             color: var(--text-primary);
-            background: transparent;
-            border: none;
-            padding: 0;
         }
 
         /* =====================================================================
-           7. Billing, Checkout & Self-Service Recovery
+           9. Billing, Docs & Status Styles
            ===================================================================== */
         .pricing-grid {
             display: grid;
@@ -958,7 +1214,6 @@
             gap: 18px;
             margin-bottom: 22px;
         }
-
         .plan-card {
             background: var(--bg-elevated);
             border: 1.5px solid var(--border-subtle);
@@ -969,32 +1224,16 @@
             flex-direction: column;
             justify-content: space-between;
             gap: 14px;
-            transition: border-color 0.18s ease;
+            transition: transform 0.2s var(--spring-snappy), border-color 0.18s ease;
         }
+        .plan-card:hover { transform: translateY(-2px); }
         .plan-card.featured {
             border-color: var(--accent);
             box-shadow: 0 8px 28px rgba(139, 92, 246, 0.16), var(--glass-bevel);
         }
-
-        .plan-price {
-            font-size: 2rem;
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            margin: 4px 0;
-        }
-        .plan-price span {
-            font-size: 0.88rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-        }
-
-        .plan-features {
-            margin: 0;
-            padding-left: 18px;
-            color: var(--text-secondary);
-            font-size: 0.88rem;
-            line-height: 1.75;
-        }
+        .plan-price { font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; margin: 4px 0; }
+        .plan-price span { font-size: 0.88rem; font-weight: 500; color: var(--text-secondary); }
+        .plan-features { margin: 0; padding-left: 18px; color: var(--text-secondary); font-size: 0.88rem; line-height: 1.75; }
 
         .fulfillment-box {
             display: none;
@@ -1004,11 +1243,10 @@
             padding: 18px 20px;
             margin-bottom: 22px;
         }
-
         .dismiss-btn {
             width: 26px;
             height: 26px;
-            border-radius: 6px;
+            border-radius: 7px;
             border: 1px solid var(--border-subtle);
             background: var(--bg-input);
             color: var(--text-secondary);
@@ -1017,10 +1255,7 @@
             justify-content: center;
             cursor: pointer;
         }
-        .dismiss-btn:hover {
-            color: var(--text-primary);
-            border-color: var(--border-hover);
-        }
+        .dismiss-btn:hover { color: var(--text-primary); border-color: var(--border-hover); }
 
         .issued-key-display {
             font-family: var(--font-mono);
@@ -1034,14 +1269,7 @@
             word-break: break-all;
             margin: 12px 0;
         }
-
-        .lookup-results {
-            margin-top: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
+        .lookup-results { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
         .lookup-item {
             display: flex;
             align-items: center;
@@ -1055,9 +1283,6 @@
             font-size: 12.5px;
         }
 
-        /* =====================================================================
-           8. Docs Code Tabs & Service Status Telemetry
-           ===================================================================== */
         .code-card {
             background: var(--bg-elevated);
             border: 1px solid var(--border-subtle);
@@ -1066,16 +1291,7 @@
             padding: 20px;
             margin-bottom: 18px;
         }
-
-        .code-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
+        .code-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
         pre.code-block {
             background: var(--bg-input);
             border: 1px solid var(--border-subtle);
@@ -1102,13 +1318,7 @@
             box-shadow: var(--glass-bevel);
             margin-bottom: 18px;
         }
-
-        .status-hero-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
+        .status-hero-left { display: flex; align-items: center; gap: 14px; }
         .pulse-dot {
             width: 12px;
             height: 12px;
@@ -1117,12 +1327,7 @@
             box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
             animation: statusPulse 2s infinite;
         }
-
-        .pulse-dot.offline {
-            background: var(--danger);
-            animation: none;
-        }
-
+        .pulse-dot.offline { background: var(--danger); animation: none; }
         @keyframes statusPulse {
             0%   { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.55); }
             70%  { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
@@ -1135,7 +1340,6 @@
             gap: 14px;
             margin-bottom: 18px;
         }
-
         .kpi-card {
             background: var(--bg-elevated);
             border: 1px solid var(--border-subtle);
@@ -1143,20 +1347,8 @@
             border-radius: var(--radius-card);
             padding: 16px 18px;
         }
-
-        .kpi-label {
-            font-size: 11.5px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-        }
-
-        .kpi-value {
-            font-family: var(--font-mono);
-            font-size: 1.45rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
+        .kpi-label { font-size: 11.5px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+        .kpi-value { font-family: var(--font-mono); font-size: 1.45rem; font-weight: 700; color: var(--text-primary); }
 
         .status-grid {
             display: grid;
@@ -1164,7 +1356,6 @@
             gap: 14px;
             margin-bottom: 20px;
         }
-
         .service-node-card {
             background: var(--bg-elevated);
             border: 1px solid var(--border-subtle);
@@ -1175,18 +1366,8 @@
             flex-direction: column;
             gap: 10px;
         }
-
-        .node-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .node-name {
-            font-size: 13.5px;
-            font-weight: 700;
-        }
-
+        .node-top { display: flex; align-items: center; justify-content: space-between; }
+        .node-name { font-size: 13.5px; font-weight: 700; }
         .node-badge {
             font-size: 11px;
             font-weight: 700;
@@ -1195,33 +1376,10 @@
             background: rgba(16, 185, 129, 0.14);
             color: var(--success);
         }
-
-        .node-badge.degraded {
-            background: rgba(239, 68, 68, 0.14);
-            color: var(--danger);
-        }
-
-        .uptime-bars {
-            display: flex;
-            gap: 3px;
-            height: 18px;
-            align-items: flex-end;
-        }
-
-        .uptime-bar {
-            flex: 1;
-            height: 100%;
-            border-radius: 2px;
-            background: var(--success);
-            opacity: 0.85;
-        }
-
-        .node-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 11.5px;
-            color: var(--text-tertiary);
-        }
+        .node-badge.degraded { background: rgba(239, 68, 68, 0.14); color: var(--danger); }
+        .uptime-bars { display: flex; gap: 3px; height: 18px; align-items: flex-end; }
+        .uptime-bar { flex: 1; height: 100%; border-radius: 2px; background: var(--success); opacity: 0.85; }
+        .node-meta { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-tertiary); }
 
         .info-card {
             background: var(--bg-elevated);
@@ -1230,33 +1388,24 @@
             border-radius: var(--radius-card);
             padding: 20px;
         }
-        .info-card h3 {
-            margin: 0 0 8px;
-            font-size: 1rem;
-        }
-        .info-card p, .info-card li {
-            color: var(--text-secondary);
-            font-size: 0.88rem;
-            line-height: 1.65;
-        }
+        .info-card h3 { margin: 0 0 8px; font-size: 1rem; }
+        .info-card p, .info-card li { color: var(--text-secondary); font-size: 0.88rem; line-height: 1.65; }
 
         /* =====================================================================
-           9. Lightbox Modal & Middle-Click Auto-Scroll Reticle
+           10. Lightbox & Middle-Click Reticle
            ===================================================================== */
         .lightbox-overlay {
             position: fixed;
             inset: 0;
             z-index: 200;
             background: rgba(6, 8, 12, 0.86);
-            backdrop-filter: blur(14px);
+            backdrop-filter: blur(16px);
             display: none;
             align-items: center;
             justify-content: center;
             padding: 24px;
         }
-        .lightbox-overlay.open {
-            display: flex;
-        }
+        .lightbox-overlay.open { display: flex; animation: sectionReveal 0.18s ease; }
         .lightbox-dialog {
             max-width: 92vw;
             max-height: 90vh;
@@ -1269,13 +1418,7 @@
             gap: 12px;
             box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
         }
-        .lightbox-media {
-            max-width: 86vw;
-            max-height: 74vh;
-            object-fit: contain;
-            border-radius: 8px;
-            background: #000;
-        }
+        .lightbox-media { max-width: 86vw; max-height: 74vh; object-fit: contain; border-radius: 8px; background: #000; }
 
         .autoscroll-reticle {
             position: fixed;
@@ -1383,79 +1526,165 @@
             <div class="stage-wrapper" id="mainScrollStage">
 
                 <!-- ===========================================================
-                     MODULE 0: Interactive Extraction Workbench
+                     MODULE 0: Fluid Dynamic Island Workbench
                      =========================================================== -->
                 <section class="view-section active" id="view-workbench">
-                    <div class="section-header">
-                        <h1 data-i18n="wb_title">Extraction Workbench</h1>
-                        <p data-i18n="wb_sub">Extract lossless original media URLs & structured metadata from single posts or entire creator feeds.</p>
+                    <div class="workbench-hero" id="workbenchHero">
+                        <div class="hero-eyebrow">
+                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+                                <polygon points="8 1.5 14.5 5 8 8.5 1.5 5 8 1.5"></polygon>
+                                <polyline points="1.5 8.5 8 12 14.5 8.5"></polyline>
+                                <polyline points="1.5 12 8 15.5 14.5 12"></polyline>
+                            </svg>
+                            <span>REST API & MCP Multimodal Pipeline</span>
+                        </div>
+                        <h1 class="hero-title">Lossless Media & Context Engine</h1>
+                        <p class="hero-subtitle">Paste any post URL, creator handle, or tag to resolve original-resolution assets and structured metadata in milliseconds.</p>
                     </div>
 
-                    <div class="control-panel">
-                        <div class="form-grid">
-                            <div class="field">
-                                <label for="apiKeyInput">X-API-Key (Stored locally in browser)</label>
-                                <input type="password" id="apiKeyInput" placeholder="km_live_... or km_trial_..." onchange="syncAccountBalance()" />
-                            </div>
-                            <div class="field">
-                                <label for="platformSelect">Platform Routing</label>
-                                <select id="platformSelect">
-                                    <option value="auto">Auto-Detect (X / Pixiv / Danbooru)</option>
-                                    <option value="x">X (Twitter)</option>
-                                    <option value="pixiv">Pixiv</option>
-                                    <option value="danbooru">Danbooru</option>
-                                </select>
-                            </div>
-                        </div>
+                    <!-- Dynamic Command Island -->
+                    <div class="command-island-wrap">
+                        <div class="command-island" id="commandIsland">
+                            <div class="island-main-row">
+                                <div class="platform-morph-badge" id="platformMorphBadge" onclick="cyclePlatformFilter()" title="Click to cycle platform override">
+                                    <span id="platformMorphIcon">
+                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                                            <circle cx="8" cy="8" r="6"></circle>
+                                            <line x1="2" y1="8" x2="14" y2="8"></line>
+                                            <path d="M8 2a9 9 0 0 1 0 12M8 2a9 9 0 0 0 0 12"></path>
+                                        </svg>
+                                    </span>
+                                    <span id="platformMorphLabel">AUTO</span>
+                                </div>
 
-                        <div class="form-grid">
-                            <div class="field">
-                                <label for="targetInput">Target Post URL, Creator (@user / users/ID), or Tag</label>
-                                <input type="text" id="targetInput" placeholder="https://x.com/user/status/123 or https://www.pixiv.net/users/2188539" onkeydown="if(event.key==='Enter') runExtraction(1)" />
-                            </div>
-                            <div class="field">
-                                <label for="credInput">Optional Transient Session Cookie (Zero-state, never stored)</label>
-                                <input type="password" id="credInput" placeholder="Optional: PHPSESSID=... or X auth_token=..." />
-                            </div>
-                        </div>
+                                <input
+                                    type="text"
+                                    class="island-target-input"
+                                    id="targetInput"
+                                    placeholder="Paste X post, @creator, Pixiv artwork/user ID, or Danbooru tag..."
+                                    oninput="onTargetInputChanged()"
+                                    onkeydown="if(event.key==='Enter') runExtraction(1)"
+                                />
 
-                        <div class="sample-bar">
-                            <span>Quick presets:</span>
-                            <button type="button" class="sample-chip" onclick="applySampleTarget('pixiv', 'https://www.pixiv.net/users/2188539')">
-                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="4 2 8 6 4 10"></polyline></svg>
-                                Pixiv Creator Feed
-                            </button>
-                            <button type="button" class="sample-chip" onclick="applySampleTarget('danbooru', 'original 1girl solo')">
-                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="4 2 8 6 4 10"></polyline></svg>
-                                Danbooru Tag Batch
-                            </button>
-                            <button type="button" class="sample-chip" onclick="applySampleTarget('x', '@wlopwangling')">
-                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="4 2 8 6 4 10"></polyline></svg>
-                                X Creator Timeline
-                            </button>
-                        </div>
-
-                        <div class="btn-row">
-                            <button class="btn btn-primary" id="extractBtn" onclick="runExtraction(1)">
-                                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                                    <polygon points="8 1.5 14.5 5 8 8.5 1.5 5 8 1.5"></polygon>
-                                    <polyline points="1.5 8.5 8 12 14.5 8.5"></polyline>
-                                    <polyline points="1.5 12 8 15.5 14.5 12"></polyline>
-                                </svg>
-                                Extract Metadata & Original URLs
-                            </button>
-                            <button class="btn btn-secondary" id="trialBtn" onclick="claimFreeTrial()">
-                                Claim 10 Free Trial Credits
-                            </button>
-                            <div style="display:flex;align-items:center;gap:6px;">
-                                <label for="pageInput" style="font-size:12px;color:var(--text-secondary);font-weight:600;">Batch Page:</label>
-                                <input type="number" id="pageInput" value="1" min="1" max="100" style="width:72px;" />
+                                <button class="island-action-btn" id="extractBtn" onclick="runExtraction(1)">
+                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="3" y1="8" x2="13" y2="8"></line>
+                                        <polyline points="8.5 3.5 13 8 8.5 12.5"></polyline>
+                                    </svg>
+                                    <span id="extractBtnText">Extract</span>
+                                </button>
                             </div>
-                            <button class="btn btn-secondary" onclick="stepBatchPage(-1)" id="prevPageBtn" style="display:none;">Prev Page</button>
-                            <button class="btn btn-secondary" onclick="stepBatchPage(1)" id="nextPageBtn" style="display:none;">Next Page</button>
+
+                            <!-- Connected Micro-Pills & Auth Drawer Trigger -->
+                            <div class="island-sub-bar">
+                                <div class="preset-pills-group">
+                                    <button type="button" class="micro-pill" onclick="applySampleTarget('x', '@gM4zFiJCWbz3G4y')">
+                                        <span>X Creator Feed</span>
+                                    </button>
+                                    <button type="button" class="micro-pill" onclick="applySampleTarget('pixiv', 'https://www.pixiv.net/users/2188539')">
+                                        <span>Pixiv Portfolio</span>
+                                    </button>
+                                    <button type="button" class="micro-pill" onclick="applySampleTarget('danbooru', 'original 1girl solo')">
+                                        <span>Danbooru Tags</span>
+                                    </button>
+                                </div>
+
+                                <div class="preset-pills-group">
+                                    <button type="button" class="micro-pill" id="prevPageBtn" onclick="stepBatchPage(-1)" style="display:none;">Prev Page</button>
+                                    <button type="button" class="micro-pill" id="nextPageBtn" onclick="stepBatchPage(1)" style="display:none;">Next Page</button>
+                                    <button type="button" class="drawer-toggle-pill" onclick="toggleIslandDrawer()">
+                                        <span class="status-indicator-dot" id="drawerAuthDot" style="color:var(--warning);"></span>
+                                        <span id="drawerToggleText">API Key & Options</span>
+                                        <svg id="drawerChevron" width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" style="transition:transform 0.22s ease;">
+                                            <polyline points="3 4.5 6 7.5 9 4.5"></polyline>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Expandable Auth & Advanced Options Drawer -->
+                            <div class="island-drawer" id="islandDrawer">
+                                <div class="island-drawer-inner">
+                                    <div class="island-drawer-grid">
+                                        <div class="field">
+                                            <label for="apiKeyInput">X-API-Key (Local browser storage)</label>
+                                            <input type="password" id="apiKeyInput" placeholder="km_live_... or km_trial_..." onchange="syncAccountBalance()" />
+                                        </div>
+                                        <div class="field">
+                                            <label for="credInput">Transient Cookie (Zero-state, optional)</label>
+                                            <input type="password" id="credInput" placeholder="PHPSESSID=... or auth_token=..." />
+                                        </div>
+                                        <div class="field">
+                                            <label for="pageInput">Batch Page</label>
+                                            <input type="number" id="pageInput" value="1" min="1" max="100" />
+                                        </div>
+                                        <button type="button" class="btn btn-secondary" id="trialBtn" onclick="claimFreeTrial()" style="height:36px;white-space:nowrap;">
+                                            Claim 10 Free Credits
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="toast-banner" id="statusBanner"></div>
+                    </div>
+
+                    <!-- Zero-Empty-State Interactive Showcase (Visible before first extraction) -->
+                    <div class="showcase-container" id="showcaseContainer">
+                        <div class="capability-strip">
+                            <div class="cap-card">
+                                <div class="cap-card-head">
+                                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round">
+                                        <rect x="2" y="2" width="12" height="12" rx="2.5"></rect>
+                                        <circle cx="5.8" cy="5.8" r="1.1"></circle>
+                                        <polyline points="14 10.5 10.5 7 4 13.5"></polyline>
+                                    </svg>
+                                    <span>Lossless Orig Assets</span>
+                                </div>
+                                <p>Direct uncompressed original image URLs, highest-bitrate MP4 streams, and Ugoira archives.</p>
+                            </div>
+
+                            <div class="cap-card">
+                                <div class="cap-card-head">
+                                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--success)" stroke-width="1.6" stroke-linecap="round">
+                                        <polyline points="1.5 8.5 4.5 8.5 6.5 3 9.5 13 11.5 8.5 14.5 8.5"></polyline>
+                                    </svg>
+                                    <span>Pooled Concurrency</span>
+                                </div>
+                                <p>Up to 24 posts per batch call with automatic session rotation and one-click ZIP packaging.</p>
+                            </div>
+
+                            <div class="cap-card">
+                                <div class="cap-card-head">
+                                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round">
+                                        <polyline points="5 4 1.5 8 5 12"></polyline>
+                                        <polyline points="11 4 14.5 8 11 12"></polyline>
+                                        <line x1="9.5" y1="2.5" x2="6.5" y2="13.5"></line>
+                                    </svg>
+                                    <span>Native MCP & REST</span>
+                                </div>
+                                <p>Connect directly into Claude Desktop, Cursor, or custom Python workflows with zero-error metering.</p>
+                            </div>
+                        </div>
+
+                        <div class="showcase-panel">
+                            <div class="showcase-header">
+                                <div class="mercury-tabs" id="showcaseTabs">
+                                    <div class="mercury-glider" id="showcaseGlider"></div>
+                                    <button type="button" class="mercury-tab-btn active" data-tab="x" onclick="switchShowcaseTab('x', this)">X Creator Feed</button>
+                                    <button type="button" class="mercury-tab-btn" data-tab="pixiv" onclick="switchShowcaseTab('pixiv', this)">Pixiv Portfolio</button>
+                                    <button type="button" class="mercury-tab-btn" data-tab="mcp" onclick="switchShowcaseTab('mcp', this)">MCP JSON-RPC</button>
+                                </div>
+
+                                <button type="button" class="btn btn-secondary" onclick="runShowcaseDemo()" style="height:32px;padding:0 13px;font-size:12px;">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                                        <polygon points="3 2 10 6 3 10 3 2"></polygon>
+                                    </svg>
+                                    <span>Run Live Demo</span>
+                                </button>
+                            </div>
+                            <pre class="showcase-preview-box" id="showcaseCodeBox"></pre>
+                        </div>
                     </div>
 
                     <!-- Extraction Results Area -->
@@ -1518,7 +1747,7 @@
                                     Download Selected (.ZIP)
                                 </button>
                                 <button class="btn btn-secondary" onclick="copySelectedUrls(false)" style="height:32px;padding:0 12px;font-size:12px;">Copy URLs</button>
-                                <button class="btn btn-secondary" onclick="copySelectedUrls(true)" style="height:32px;padding:0 10px;font-size:11.5px;color:var(--text-secondary);" title="Copy Aria2 CLI download list">Aria2</button>
+                                <button class="btn btn-secondary" onclick="copySelectedUrls(true)" style="height:32px;padding:0 10px;font-size:11.5px;color:var(--text-secondary);" title="Copy Aria2 CLI manifest">Aria2</button>
                             </div>
                         </div>
 
@@ -1543,7 +1772,6 @@
                         <p>Instant automated API key provisioning via USDC / USDT or Credit Card On-Ramp. Prepaid credits never expire.</p>
                     </div>
 
-                    <!-- Auto-Fulfillment Key Reveal Banner with Dismiss Control -->
                     <div class="fulfillment-box" id="fulfillmentBox">
                         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
                             <strong style="color:var(--success);font-size:15px;" id="fulfillmentTitle">Checking Order Fulfillment...</strong>
@@ -1567,7 +1795,6 @@
                         </div>
                     </div>
 
-                    <!-- Buyer Email Input -->
                     <div class="control-panel">
                         <div class="form-grid" style="margin-bottom:0;">
                             <div class="field">
@@ -1576,7 +1803,7 @@
                             </div>
                             <div class="field">
                                 <label>Accepted Payment Methods</label>
-                                <div style="height:38px;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-secondary);">
+                                <div style="height:36px;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-secondary);">
                                     <span class="tag-pill">USDC / USDT</span>
                                     <span class="tag-pill">Visa / Mastercard</span>
                                     <span>Auto-issued upon confirmation</span>
@@ -1586,7 +1813,6 @@
                         <div class="toast-banner" id="billingBanner"></div>
                     </div>
 
-                    <!-- Pricing Plans -->
                     <div class="pricing-grid">
                         <div class="plan-card">
                             <div>
@@ -1623,7 +1849,6 @@
                         </div>
                     </div>
 
-                    <!-- Self-Service Key Recovery & Order Lookup -->
                     <div class="control-panel">
                         <h3 style="margin:0 0 6px;font-size:1rem;">Key Recovery & Balance Lookup</h3>
                         <p style="margin:0 0 14px;font-size:12.5px;color:var(--text-secondary);">
@@ -1689,7 +1914,7 @@
                         <ul>
                             <li><code>X-Kaede-Latency-Ms</code> — End-to-end upstream extraction latency in milliseconds.</li>
                             <li><code>X-Kaede-Throughput</code> — Resolved original media assets per second.</li>
-                            <li><code>X-Kaede-Engine</code> — Selected routing strategy (e.g. <code>pixiv:batch_pooled_6x</code>, <code>x:fxtwitter_primary</code>).</li>
+                            <li><code>X-Kaede-Engine</code> — Selected routing strategy (e.g. <code>pixiv:batch_pooled_6x</code>, <code>x:graphql_pool</code>).</li>
                         </ul>
                     </div>
                 </section>
@@ -1795,9 +2020,7 @@
             en: {
                 guest_mode: "Guest Mode",
                 invalid_key: "Invalid Key",
-                checking_key: "Verifying Key...",
-                wb_title: "Extraction Workbench",
-                wb_sub: "Extract lossless original media URLs & structured metadata from single posts or entire creator feeds."
+                checking_key: "Verifying Key..."
             }
         };
         let currentLang = "en";
@@ -1875,6 +2098,8 @@
                 refreshServiceStatus();
             } else if (moduleId === "docs") {
                 renderDocSnippet();
+            } else if (moduleId === "workbench") {
+                positionShowcaseGlider();
             }
         }
 
@@ -1885,12 +2110,162 @@
         }
 
         /* =====================================================================
-           B. Live Top-Right Account Hub & Balance Sync
+           B. Dynamic Command Island: Platform Morphing, Specular Cursor & Drawer
+           ===================================================================== */
+        const PLATFORM_CYCLE = ["auto", "x", "pixiv", "danbooru"];
+        let selectedPlatformOverride = "auto";
+        let isDrawerOpen = false;
+
+        const PLATFORM_ICONS = {
+            auto: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><line x1="2" y1="8" x2="14" y2="8"/><path d="M8 2a9 9 0 0 1 0 12M8 2a9 9 0 0 0 0 12"/></svg>`,
+            x: `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><line x1="2.5" y1="2.5" x2="13.5" y2="13.5"/><line x1="13.5" y1="2.5" x2="2.5" y2="13.5"/></svg>`,
+            pixiv: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4.5 13.5V3h4.2a3.3 3.3 0 0 1 0 6.6H4.5"/></svg>`,
+            danbooru: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2.5" y="2.5" width="11" height="11" rx="2"/><line x1="2.5" y1="6.5" x2="13.5" y2="6.5"/><line x1="6.5" y1="6.5" x2="6.5" y2="13.5"/></svg>`
+        };
+
+        function inferPlatformFromText(raw) {
+            const s = raw.trim().toLowerCase();
+            if (!s) return "auto";
+            if (s.includes("x.com/") || s.includes("twitter.com/") || s.startsWith("@")) return "x";
+            if (s.includes("pixiv.net/") || s.startsWith("uid:")) return "pixiv";
+            if (s.includes("danbooru.donmai.us/")) return "danbooru";
+            return "auto";
+        }
+
+        function refreshPlatformMorphBadge() {
+            const val = document.getElementById("targetInput").value;
+            const effective = selectedPlatformOverride !== "auto"
+                ? selectedPlatformOverride
+                : inferPlatformFromText(val);
+
+            const badge = document.getElementById("platformMorphBadge");
+            const iconBox = document.getElementById("platformMorphIcon");
+            const labelEl = document.getElementById("platformMorphLabel");
+
+            iconBox.innerHTML = PLATFORM_ICONS[effective] || PLATFORM_ICONS.auto;
+            labelEl.textContent = effective.toUpperCase();
+            badge.classList.toggle("detected", effective !== "auto");
+        }
+
+        function onTargetInputChanged() {
+            refreshPlatformMorphBadge();
+        }
+
+        function cyclePlatformFilter() {
+            const nextIdx = (PLATFORM_CYCLE.indexOf(selectedPlatformOverride) + 1) % PLATFORM_CYCLE.length;
+            selectedPlatformOverride = PLATFORM_CYCLE[nextIdx];
+            refreshPlatformMorphBadge();
+        }
+
+        function setIslandDrawerOpen(open) {
+            isDrawerOpen = open;
+            const drawer = document.getElementById("islandDrawer");
+            const chev = document.getElementById("drawerChevron");
+            drawer.classList.toggle("open", isDrawerOpen);
+            if (chev) chev.style.transform = isDrawerOpen ? "rotate(180deg)" : "rotate(0deg)";
+        }
+
+        function toggleIslandDrawer() {
+            setIslandDrawerOpen(!isDrawerOpen);
+        }
+
+        // Specular Spotlight Tracking on Command Island
+        const commandIslandEl = document.getElementById("commandIsland");
+        if (commandIslandEl) {
+            commandIslandEl.addEventListener("mousemove", (e) => {
+                const rect = commandIslandEl.getBoundingClientRect();
+                commandIslandEl.style.setProperty("--spot-x", `${e.clientX - rect.left}px`);
+                commandIslandEl.style.setProperty("--spot-y", `${e.clientY - rect.top}px`);
+            });
+        }
+
+        /* =====================================================================
+           C. Zero-Empty-State Interactive Showcase (Mercury Glider)
+           ===================================================================== */
+        const SHOWCASE_DATA = {
+            x: {
+                platform: "x",
+                target: "@gM4zFiJCWbz3G4y",
+                code: `{
+  "success": true,
+  "mode": "batch",
+  "platform": "x",
+  "creator": { "creator_id": "gM4zFiJCWbz3G4y", "display_name": "サンドマン" },
+  "posts_count": 24,
+  "assets_sample": [
+    "https://pbs.twimg.com/media/G6x9k2XaMAA8v1p?format=jpg&name=orig"
+  ],
+  "telemetry": { "latency_ms": 284.1, "assets_per_sec": 119.6, "route": "x:graphql_pool" }
+}`
+            },
+            pixiv: {
+                platform: "pixiv",
+                target: "https://www.pixiv.net/users/2188539",
+                code: `{
+  "success": true,
+  "mode": "batch",
+  "platform": "pixiv",
+  "creator": { "creator_id": "2188539", "display_name": "Miv4t" },
+  "posts_count": 24,
+  "assets_sample": [
+    "https://i.pximg.net/img-original/img/2026/10/18/00/12/44/123456789_p0.png"
+  ],
+  "telemetry": { "latency_ms": 412.8, "assets_per_sec": 84.2, "concurrency_factor": 6 }
+}`
+            },
+            mcp: {
+                platform: "auto",
+                target: "original 1girl solo",
+                code: `// POST https://api.kaedemeta.com/mcp
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "extract_creator_feed",
+    "arguments": { "target": "original 1girl solo", "platform": "danbooru", "limit": 24 }
+  }
+}`
+            }
+        };
+
+        let activeShowcaseKey = "x";
+
+        function positionShowcaseGlider() {
+            const activeBtn = document.querySelector("#showcaseTabs .mercury-tab-btn.active");
+            const glider = document.getElementById("showcaseGlider");
+            if (!activeBtn || !glider) return;
+            glider.style.width = `${activeBtn.offsetWidth}px`;
+            glider.style.transform = `translateX(${activeBtn.offsetLeft - 3}px)`;
+        }
+
+        function switchShowcaseTab(key, btnEl) {
+            activeShowcaseKey = key;
+            document.querySelectorAll("#showcaseTabs .mercury-tab-btn").forEach(b => b.classList.remove("active"));
+            if (btnEl) btnEl.classList.add("active");
+            positionShowcaseGlider();
+
+            const box = document.getElementById("showcaseCodeBox");
+            if (box && SHOWCASE_DATA[key]) {
+                box.style.animation = "none";
+                void box.offsetWidth;
+                box.style.animation = "";
+                box.textContent = SHOWCASE_DATA[key].code;
+            }
+        }
+
+        function runShowcaseDemo() {
+            const item = SHOWCASE_DATA[activeShowcaseKey] || SHOWCASE_DATA.x;
+            applySampleTarget(item.platform, item.target);
+            runExtraction(1);
+        }
+
+        /* =====================================================================
+           D. Live Top-Right Account Hub & Balance Sync
            ===================================================================== */
         function toggleAccountPopover(e) {
             e.stopPropagation();
-            const pop = document.getElementById("accountPopover");
-            pop.classList.toggle("open");
+            document.getElementById("accountPopover").classList.toggle("open");
         }
 
         function closeAccountPopover() {
@@ -1907,12 +2282,22 @@
         function updateAccountPillState(state, text, meta = {}) {
             const btn = document.getElementById("accountPillBtn");
             const pillText = document.getElementById("accountPillText");
+            const drawerDot = document.getElementById("drawerAuthDot");
+            const drawerTxt = document.getElementById("drawerToggleText");
+
             btn.classList.remove("active-key", "low-balance");
 
             if (state === "active") {
                 btn.classList.add(meta.credits <= 20 ? "low-balance" : "active-key");
+                if (drawerDot) drawerDot.style.color = "var(--success)";
+                if (drawerTxt) drawerTxt.textContent = "Authenticated · Options";
             } else if (state === "error") {
                 btn.classList.add("low-balance");
+                if (drawerDot) drawerDot.style.color = "var(--danger)";
+                if (drawerTxt) drawerTxt.textContent = "Invalid Key · Options";
+            } else {
+                if (drawerDot) drawerDot.style.color = "var(--warning)";
+                if (drawerTxt) drawerTxt.textContent = "API Key & Options";
             }
 
             pillText.textContent = text;
@@ -1924,12 +2309,13 @@
                 typeof meta.calls === "number" ? meta.calls.toLocaleString() : "0";
         }
 
-        async function syncAccountBalance() {
+        async function syncAccountBalance(isInitialLoad = false) {
             const key = document.getElementById("apiKeyInput").value.trim();
             if (!key) {
                 localStorage.removeItem("km_api_key");
                 updateAccountPillState("guest", t("guest_mode"), { tag: "No Key", prefix: "Not configured", credits: 0, calls: 0 });
                 renderDocSnippet();
+                if (isInitialLoad) setIslandDrawerOpen(true);
                 return;
             }
 
@@ -1948,6 +2334,7 @@
                         credits: 0,
                         calls: 0
                     });
+                    if (isInitialLoad) setIslandDrawerOpen(true);
                     return;
                 }
                 const data = await res.json();
@@ -1957,6 +2344,7 @@
                     credits: data.credits_remaining,
                     calls: data.total_calls
                 });
+                if (isInitialLoad) setIslandDrawerOpen(false);
             } catch (err) {
                 updateAccountPillState("guest", "Offline", { tag: "Unreachable", prefix: key.slice(0, 12) + "..." });
             }
@@ -1973,12 +2361,12 @@
         function clearStoredApiKey() {
             document.getElementById("apiKeyInput").value = "";
             localStorage.removeItem("km_api_key");
-            syncAccountBalance();
+            syncAccountBalance(true);
             closeAccountPopover();
         }
 
         /* =====================================================================
-           C. 3-Mode Theme Engine (0: Auto, 1: Light, 2: Dark)
+           E. 3-Mode Theme Engine (0: Auto, 1: Light, 2: Dark)
            ===================================================================== */
         let themeScheme = parseInt(localStorage.getItem("km_theme_scheme") || "2", 10);
         const systemDarkQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -2021,7 +2409,7 @@
         });
 
         /* =====================================================================
-           D. Middle-Click Auto-Scroll Anchor
+           F. Middle-Click Auto-Scroll Anchor
            ===================================================================== */
         const scrollStage = document.getElementById("mainScrollStage");
         const reticle = document.getElementById("autoScrollReticle");
@@ -2107,7 +2495,7 @@
         window.addEventListener("blur", stopMiddleAutoScroll);
 
         /* =====================================================================
-           E. Checkout, Auto Key Fulfillment & Self-Service Recovery
+           G. Checkout, Auto Key Fulfillment & Self-Service Recovery
            ===================================================================== */
         let latestIssuedKey = "";
         let pollTimerId = null;
@@ -2287,6 +2675,7 @@
             document.getElementById("apiKeyInput").value = key;
             localStorage.setItem("km_api_key", key);
             syncAccountBalance();
+            setIslandDrawerOpen(false);
             switchModule("workbench");
             showBanner("Recovered API key loaded into Workbench.", "success");
         }
@@ -2294,7 +2683,7 @@
         async function claimFreeTrial() {
             const btn = document.getElementById("trialBtn");
             btn.disabled = true;
-            btn.textContent = "Generating Trial Key...";
+            btn.textContent = "Generating...";
             try {
                 const res = await fetch(`${API_BASE}/v1/trial-key`, { method: "POST" });
                 const data = await res.json();
@@ -2303,17 +2692,18 @@
                 document.getElementById("apiKeyInput").value = data.api_key;
                 localStorage.setItem("km_api_key", data.api_key);
                 syncAccountBalance();
+                setIslandDrawerOpen(false);
                 showBanner(`Free trial key issued (${data.credits} credits) and loaded automatically.`, "success");
             } catch (err) {
                 showBanner(`Trial notice: ${err.message}`, "error");
             } finally {
                 btn.disabled = false;
-                btn.textContent = "Claim 10 Free Trial Credits";
+                btn.textContent = "Claim 10 Free Credits";
             }
         }
 
         /* =====================================================================
-           F. Dynamic Developer Documentation Snippets
+           H. Dynamic Developer Documentation Snippets
            ===================================================================== */
         let currentDocTab = "curl";
         let revealKeyInDocs = false;
@@ -2416,12 +2806,12 @@ console.log(data.posts);`;
         }
 
         /* =====================================================================
-           G. Public Service Status & Live Telemetry Dashboard
+           I. Public Service Status & Live Telemetry Dashboard
            ===================================================================== */
         const SERVICE_COMPONENTS = [
             { id: "gateway", name: "REST API Edge Gateway", desc: "Cloudflare Anycast + US-West Core" },
             { id: "mcp", name: "MCP JSON-RPC Server", desc: "Agentic Tool Discovery & Execution" },
-            { id: "x_engine", name: "X (Twitter) Extraction Engine", desc: "Lossless Orig & Timeline Parser" },
+            { id: "x_engine", name: "X (Twitter) Extraction Engine", desc: "GraphQL Session Pool & Lossless Orig" },
             { id: "pixiv_engine", name: "Pixiv Extraction Engine", desc: "6x Pooled Manga & Ugoira Resolver" },
             { id: "danbooru_engine", name: "Danbooru Extraction Engine", desc: "Direct Post & Tag Batch Resolver" },
             { id: "billing_db", name: "Metered Billing Ledger", desc: "SQLite WAL Atomic Credit Store" }
@@ -2497,15 +2887,16 @@ console.log(data.posts);`;
         }
 
         /* =====================================================================
-           H. Extraction Workbench Logic, Telemetry HUD & Lightbox
+           J. Extraction Workbench Logic, Direct Save & ZIP Packaging
            ===================================================================== */
         let extractedPostsState = [];
         let lastRawExtractionData = null;
 
         function applySampleTarget(platform, target) {
-            document.getElementById("platformSelect").value = platform;
+            selectedPlatformOverride = platform;
             document.getElementById("targetInput").value = target;
             document.getElementById("pageInput").value = "1";
+            refreshPlatformMorphBadge();
         }
 
         function setResultViewMode(mode) {
@@ -2548,21 +2939,30 @@ console.log(data.posts);`;
         async function runExtraction(overridePage = null) {
             const apiKey = document.getElementById("apiKeyInput").value.trim();
             const target = document.getElementById("targetInput").value.trim();
-            const platform = document.getElementById("platformSelect").value;
+            const platform = selectedPlatformOverride;
             const credential = document.getElementById("credInput").value.trim();
             const pageEl = document.getElementById("pageInput");
             const page = overridePage !== null ? overridePage : Math.max(1, parseInt(pageEl.value || "1", 10));
             pageEl.value = String(page);
 
-            if (!apiKey) return showBanner("Please enter your X-API-Key or click 'Claim 10 Free Trial Credits'.", "error");
-            if (!target) return showBanner("Please enter a post URL, @creator, or tag.", "error");
+            if (!apiKey) {
+                setIslandDrawerOpen(true);
+                return showBanner("Please enter your X-API-Key or click 'Claim 10 Free Credits'.", "error");
+            }
+            if (!target) {
+                document.getElementById("targetInput").focus();
+                return showBanner("Please enter a post URL, @creator, or tag.", "error");
+            }
 
             localStorage.setItem("km_api_key", apiKey);
 
             const btn = document.getElementById("extractBtn");
+            const btnText = document.getElementById("extractBtnText");
+            const island = document.getElementById("commandIsland");
             btn.disabled = true;
-            btn.textContent = "Extracting...";
-            showBanner("Resolving upstream metadata & lossless original assets...", "info");
+            btnText.textContent = "Resolving...";
+            island.classList.add("is-extracting");
+            document.getElementById("statusBanner").style.display = "none";
 
             try {
                 const payload = { target, platform, page, limit: 24 };
@@ -2581,21 +2981,18 @@ console.log(data.posts);`;
                 if (!res.ok) throw new Error(data.detail || `HTTP ${res.status}`);
 
                 lastRawExtractionData = data;
-                document.getElementById("statusBanner").style.display = "none";
+                localStorage.setItem("km_has_extracted", "1");
+                document.getElementById("workbenchHero").classList.add("compact");
+                document.getElementById("showcaseContainer").style.display = "none";
+                setIslandDrawerOpen(false);
                 syncAccountBalance();
                 renderWorkbenchResults(data);
             } catch (err) {
                 showBanner(`Extraction failed (0 credits deducted): ${err.message}`, "error");
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = `
-                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="8 1.5 14.5 5 8 8.5 1.5 5 8 1.5"></polygon>
-                        <polyline points="1.5 8.5 8 12 14.5 8.5"></polyline>
-                        <polyline points="1.5 12 8 15.5 14.5 12"></polyline>
-                    </svg>
-                    Extract Metadata & Original URLs
-                `;
+                btnText.textContent = "Extract";
+                island.classList.remove("is-extracting");
             }
         }
 
@@ -2659,6 +3056,7 @@ console.log(data.posts);`;
 
             const checkSvg = `<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2.5 7.5 5.5 10.5 11.5 3.5"></polyline></svg>`;
             const expandSvg = `<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 2 12 2 12 5"/><polyline points="5 12 2 12 2 9"/><line x1="12" y1="2" x2="8" y2="6"/><line x1="2" y1="12" x2="6" y2="8"/></svg>`;
+            const extSvg = `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3.5H3.5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-3"/><polyline points="9.5 2.5 13.5 2.5 13.5 6.5"/><line x1="7" y1="9" x2="13.5" y2="2.5"/></svg>`;
 
             extractedPostsState.forEach((post, index) => {
                 const firstAsset = post.assets[0] || {};
@@ -2667,6 +3065,7 @@ console.log(data.posts);`;
 
                 const card = document.createElement("div");
                 card.className = "post-card" + (post.selected ? " selected" : "");
+                card.style.setProperty("--stagger-idx", String(Math.min(index, 24)));
                 card.innerHTML = `
                     <div class="select-badge" onclick="togglePostSelection(${index})">${post.selected ? checkSvg : ""}</div>
                     <div class="asset-count-badge">${post.assets.length} file(s) · .${firstAsset.extension || "bin"}</div>
@@ -2686,11 +3085,7 @@ console.log(data.posts);`;
                                 Save (${post.assets.length})
                             </button>
                             <a href="${firstAsset.original_url || "#"}" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="flex:0 0 34px;padding:0;" title="Open original in new tab">
-                                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M6.5 3.5H3.5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-3"></path>
-                                    <polyline points="9.5 2.5 13.5 2.5 13.5 6.5"></polyline>
-                                    <line x1="7" y1="9" x2="13.5" y2="2.5"></line>
-                                </svg>
+                                ${extSvg}
                             </a>
                         </div>
                     </div>
@@ -2752,7 +3147,7 @@ console.log(data.posts);`;
                     showBanner(`Saved ${post.assets.length} files as ${post.post_id}_bundle.zip.`, "success");
                 }
             } catch (err) {
-                showBanner(`Direct save failed (${err.message}). Click the external link icon to open directly.`, "error");
+                showBanner(`Direct save failed (${err.message}). Use the external link icon to open directly.`, "error");
             } finally {
                 if (btn) {
                     btn.disabled = false;
@@ -2842,14 +3237,6 @@ console.log(data.posts);`;
                 `${selCount} / ${extractedPostsState.length} posts selected (${assetCount} original files)`;
         }
 
-        function copyPostUrls(idx) {
-            const post = extractedPostsState[idx];
-            if (!post) return;
-            const urls = post.assets.map(a => a.original_url).join("\n");
-            navigator.clipboard.writeText(urls);
-            showBanner(`Copied ${post.assets.length} original URL(s) for post ${post.post_id}.`, "success");
-        }
-
         function copySelectedUrls(asAria2) {
             const selected = extractedPostsState.filter(p => p.selected);
             if (!selected.length) return showBanner("No posts selected.", "error");
@@ -2879,12 +3266,16 @@ console.log(data.posts);`;
         }
 
         /* =====================================================================
-           I. Shell Initialization
+           K. Shell Initialization
            ===================================================================== */
         window.addEventListener("DOMContentLoaded", () => {
             if (localStorage.getItem("km_sidebar_expanded") === "1") {
                 document.getElementById("sidebar").classList.add("expanded");
             }
+            if (localStorage.getItem("km_has_extracted") === "1") {
+                document.getElementById("workbenchHero").classList.add("compact");
+            }
+
             const savedKey = localStorage.getItem("km_api_key");
             if (savedKey) {
                 document.getElementById("apiKeyInput").value = savedKey;
@@ -2898,8 +3289,13 @@ console.log(data.posts);`;
 
             renderSidebarNav();
             applyEffectiveTheme();
-            syncAccountBalance();
+            syncAccountBalance(true);
             renderDocSnippet();
+            refreshPlatformMorphBadge();
+
+            // Initialize Mercury Showcase Tab
+            const initialShowcaseBtn = document.querySelector("#showcaseTabs .mercury-tab-btn.active");
+            switchShowcaseTab("x", initialShowcaseBtn);
 
             const urlParams = new URLSearchParams(window.location.search);
             const orderId = urlParams.get("order_id") || localStorage.getItem("km_pending_order_id");
@@ -2908,6 +3304,8 @@ console.log(data.posts);`;
                 pollOrderFulfillment(orderId);
             }
         });
+
+        window.addEventListener("resize", positionShowcaseGlider);
     </script>
 </body>
 </html>
