@@ -3,34 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KaedeMeta Core — High-Concurrency Multimodal Context API</title>
+    <title>KaedeMeta Core — High-Concurrency Multimodal Context API & Workbench</title>
     <style>
-        :root { --bg: #0f1115; --card: #181b21; --text: #f3f4f6; --muted: #9ca3af; --accent: #8b5cf6; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; line-height: 1.6; }
-        .container { max-width: 960px; margin: 0 auto; padding: 48px 24px; }
-        header { text-align: center; padding-bottom: 48px; border-bottom: 1px solid #27272a; }
-        h1 { font-size: 2.5rem; margin-bottom: 12px; letter-spacing: -0.02em; }
-        .subtitle { color: var(--muted); font-size: 1.15rem; max-width: 640px; margin: 0 auto 24px; }
-        .badge { display: inline-block; background: rgba(139, 92, 246, 0.15); color: #c4b5fd; padding: 4px 12px; border-radius: 999px; font-size: 0.85rem; font-weight: 600; margin-bottom: 16px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; margin: 48px 0; }
-        .card { background: var(--card); border: 1px solid #27272a; border-radius: 12px; padding: 24px; }
+        :root {
+            --bg: #0b0d11;
+            --card: #14171f;
+            --card-hover: #1a1e29;
+            --border: #262b36;
+            --text: #f3f4f6;
+            --muted: #9ca3af;
+            --accent: #8b5cf6;
+            --accent-hover: #7c3aed;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            line-height: 1.6;
+        }
+        .container { max-width: 1040px; margin: 0 auto; padding: 40px 24px; }
+        header { text-align: center; padding-bottom: 40px; border-bottom: 1px solid var(--border); }
+        h1 { font-size: 2.6rem; margin: 0 0 12px; letter-spacing: -0.02em; }
+        .subtitle { color: var(--muted); font-size: 1.1rem; max-width: 680px; margin: 0 auto 20px; }
+        .badge {
+            display: inline-block;
+            background: rgba(139, 92, 246, 0.15);
+            color: #c4b5fd;
+            padding: 4px 14px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 14px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        /* Interactive Human Workbench */
+        .workbench {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            margin: 36px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+        .wb-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .wb-title { font-size: 1.35rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 10px; }
+        .credit-pill {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+        @media (max-width: 720px) { .form-row { grid-template-columns: 1fr; } }
+        .input-group { display: flex; flex-direction: column; gap: 6px; }
+        .input-group label { font-size: 0.82rem; color: var(--muted); font-weight: 600; }
+        input, select {
+            background: #090a0d;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 11px 14px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus, select:focus { border-color: var(--accent); }
+        .action-bar { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+        button {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 11px 22px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        button:hover { background: var(--accent-hover); }
+        button:active { transform: scale(0.98); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        button.secondary { background: #222632; color: var(--text); border: 1px solid var(--border); }
+        button.secondary:hover { background: #2c3140; }
+
+        .status-box {
+            margin-top: 16px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        .status-error { background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); color: #fca5a5; }
+        .status-info { background: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139, 92, 246, 0.35); color: #ddd6fe; }
+
+        /* Result Viewer */
+        .result-area { margin-top: 24px; display: none; border-top: 1px solid var(--border); padding-top: 24px; }
+        .creator-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #0e1016;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .creator-info { display: flex; align-items: center; gap: 12px; }
+        .creator-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: #262b36; }
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+        }
+        .asset-card {
+            background: #0e1016;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .asset-thumb {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #161922;
+            display: block;
+        }
+        .asset-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; flex: 1; justify-content: space-between; }
+        .asset-meta { font-size: 0.8rem; color: var(--muted); word-break: break-all; }
+        .tag-pill {
+            display: inline-block;
+            font-size: 0.72rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #222632;
+            color: #c4b5fd;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .asset-actions { display: flex; gap: 8px; margin-top: 6px; }
+        .asset-actions a, .asset-actions button {
+            flex: 1;
+            text-align: center;
+            font-size: 0.8rem;
+            padding: 6px 10px;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        /* Feature & Pricing Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; margin: 40px 0; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
         .card h3 { margin-top: 0; color: #fff; }
         .price { font-size: 2rem; font-weight: 700; margin: 12px 0; }
         .price span { font-size: 0.9rem; color: var(--muted); font-weight: 400; }
         ul { padding-left: 20px; color: var(--muted); }
         li { margin-bottom: 8px; }
-        pre { background: #090a0d; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem; color: #a7f3d0; border: 1px solid #27272a; }
-        footer { margin-top: 64px; padding-top: 32px; border-top: 1px solid #27272a; font-size: 0.85rem; color: var(--muted); }
-        .legal-box { background: #13161b; padding: 20px; border-radius: 8px; margin-top: 24px; }
+        pre { background: #090a0d; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem; color: #a7f3d0; border: 1px solid var(--border); }
+        footer { margin-top: 64px; padding-top: 32px; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--muted); }
+        .legal-box { background: #111319; padding: 20px; border-radius: 8px; margin-top: 24px; border: 1px solid var(--border); }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <div class="badge">RESTful API & MCP Protocol Ready</div>
+            <div class="badge">RESTful API · MCP Protocol · Interactive Workbench</div>
             <h1>KaedeMeta Core</h1>
-            <p class="subtitle">Low-latency structured metadata normalization and public web context extraction infrastructure built for modern AI Agents and automated pipelines.</p>
+            <p class="subtitle">Low-latency structured metadata normalization and public web context extraction infrastructure built for modern AI Agents and power users.</p>
         </header>
+
+        <!-- Human Interactive Workbench -->
+        <section class="workbench" id="workbench">
+            <div class="wb-header">
+                <h2 class="wb-title">Interactive Extraction Workbench</h2>
+                <span class="credit-pill" id="creditDisplay">Credits: Ready (Enter API Key)</span>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label for="apiKeyInput">X-API-Key (Stored locally in your browser)</label>
+                    <input type="password" id="apiKeyInput" placeholder="km_live_..." />
+                </div>
+                <div class="input-group">
+                    <label for="platformSelect">Platform Routing</label>
+                    <select id="platformSelect">
+                        <option value="auto">Auto-Detect (X / Pixiv / Danbooru)</option>
+                        <option value="x">X (Twitter)</option>
+                        <option value="pixiv">Pixiv</option>
+                        <option value="danbooru">Danbooru</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label for="targetInput">Target Post URL or Numeric ID</label>
+                    <input type="text" id="targetInput" placeholder="https://x.com/user/status/123456789 or https://www.pixiv.net/artworks/123456" />
+                </div>
+                <div class="input-group">
+                    <label for="credInput">Optional Transient Session Cookie (Never stored on server)</label>
+                    <input type="password" id="credInput" placeholder="Optional: PHPSESSID=... for restricted Pixiv items" />
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <button id="extractBtn" onclick="runExtraction()">Extract Metadata & Original URLs</button>
+                <button class="secondary" onclick="copyAllUrls()" id="copyAllBtn" style="display:none;">Copy All Original URLs</button>
+            </div>
+
+            <div class="status-box" id="statusBox"></div>
+
+            <div class="result-area" id="resultArea">
+                <div class="creator-bar">
+                    <div class="creator-info">
+                        <img id="creatorAvatar" class="creator-avatar" src="" alt="" onerror="this.style.display='none'" />
+                        <div>
+                            <div id="creatorName" style="font-weight:700; font-size:1.05rem;"></div>
+                            <div id="postTitle" style="font-size:0.85rem; color:var(--muted);"></div>
+                        </div>
+                    </div>
+                    <span class="tag-pill" id="resultPlatformBadge"></span>
+                </div>
+                <div class="asset-grid" id="assetGrid"></div>
+            </div>
+        </section>
 
         <div class="grid">
             <div class="card">
@@ -47,8 +261,8 @@
             </div>
         </div>
 
-        <h2>API Quickstart</h2>
-        <pre>curl -X POST https://api.kaedemeta.core/v1/extract \
+        <h2>Developer API Quickstart</h2>
+        <pre>curl -X POST https://api.kaedemeta.com/v1/extract \
   -H "Content-Type: application/json" \
   -H "X-API-Key: km_live_your_api_key" \
   -d '{"target": "https://x.com/example/status/1234567890"}'</pre>
@@ -61,7 +275,7 @@
                 <ul>
                     <li>5,000 Verified API Extraction Credits</li>
                     <li>Never expires</li>
-                    <li>Standard concurrency rate limit</li>
+                    <li>Full access to Web Workbench & REST API</li>
                     <li>Instant API Key delivery via email</li>
                 </ul>
             </div>
@@ -87,5 +301,135 @@
             <p style="text-align: center; margin-top: 24px;">&copy; 2026 KaedeMeta Core. Operated by Independent Software Developer.</p>
         </footer>
     </div>
+
+    <script>
+        const API_BASE = "https://api.kaedemeta.com";
+        let currentExtractedUrls = [];
+
+        window.addEventListener("DOMContentLoaded", () => {
+            const savedKey = localStorage.getItem("km_api_key");
+            if (savedKey) document.getElementById("apiKeyInput").value = savedKey;
+        });
+
+        function showStatus(msg, isError = false) {
+            const box = document.getElementById("statusBox");
+            box.textContent = msg;
+            box.className = "status-box " + (isError ? "status-error" : "status-info");
+            box.style.display = "block";
+        }
+
+        async function runExtraction() {
+            const apiKey = document.getElementById("apiKeyInput").value.trim();
+            const target = document.getElementById("targetInput").value.trim();
+            const platform = document.getElementById("platformSelect").value;
+            const credential = document.getElementById("credInput").value.trim();
+
+            if (!apiKey) {
+                showStatus("Please enter your X-API-Key first.", true);
+                return;
+            }
+            if (!target) {
+                showStatus("Please enter a target URL or post ID.", true);
+                return;
+            }
+
+            localStorage.setItem("km_api_key", apiKey);
+
+            const btn = document.getElementById("extractBtn");
+            btn.disabled = true;
+            btn.textContent = "Extracting...";
+            showStatus("Resolving upstream metadata & original asset links...", false);
+            document.getElementById("resultArea").style.display = "none";
+            document.getElementById("copyAllBtn").style.display = "none";
+
+            try {
+                const payload = { target, platform };
+                if (credential) payload.credential = credential;
+
+                const res = await fetch(`${API_BASE}/v1/extract`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-API-Key": apiKey
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.detail || `HTTP ${res.status}`);
+                }
+
+                document.getElementById("statusBox").style.display = "none";
+                document.getElementById("creditDisplay").textContent = `Credits Remaining: ${data.credits_remaining.toLocaleString()}`;
+                renderResults(data);
+            } catch (err) {
+                showStatus(`Extraction failed (0 credits deducted): ${err.message}`, true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Extract Metadata & Original URLs";
+            }
+        }
+
+        function renderResults(data) {
+            const avatarEl = document.getElementById("creatorAvatar");
+            if (data.creator.avatar_url) {
+                avatarEl.src = data.creator.avatar_url;
+                avatarEl.style.display = "block";
+            } else {
+                avatarEl.style.display = "none";
+            }
+
+            document.getElementById("creatorName").textContent = `${data.creator.display_name} (@${data.creator.creator_id})`;
+            document.getElementById("postTitle").textContent = `${data.title} · ${data.published_date || ""}`;
+            document.getElementById("resultPlatformBadge").textContent = `${data.platform} · ${data.assets.length} asset(s)`;
+
+            const grid = document.getElementById("assetGrid");
+            grid.innerHTML = "";
+            currentExtractedUrls = [];
+
+            data.assets.forEach((asset, idx) => {
+                currentExtractedUrls.push(asset.original_url);
+                const thumbSrc = data.thumbnail_url || (asset.type === "image" ? asset.original_url : "");
+                const hasHeaders = asset.required_headers && Object.keys(asset.required_headers).length > 0;
+
+                const card = document.createElement("div");
+                card.className = "asset-card";
+                card.innerHTML = `
+                    ${thumbSrc ? `<img class="asset-thumb" src="${thumbSrc}" alt="${asset.file_name}" referrerpolicy="no-referrer" />` : `<div class="asset-thumb" style="display:flex;align-items:center;justify-content:center;color:var(--muted);">${asset.type.toUpperCase()}</div>`}
+                    <div class="asset-body">
+                        <div>
+                            <span class="tag-pill">${asset.type} · .${asset.extension}</span>
+                            <div class="asset-meta" style="margin-top:6px;">${asset.file_name}</div>
+                            ${hasHeaders ? `<div style="font-size:0.75rem;color:#fbbf24;margin-top:4px;">Requires Referer: pixiv.net</div>` : ""}
+                        </div>
+                        <div class="asset-actions">
+                            <a href="${asset.original_url}" target="_blank" rel="noopener noreferrer" style="background:var(--accent);color:#fff;">Open Original</a>
+                            <button class="secondary" onclick="copySingleUrl('${asset.original_url}')">Copy URL</button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            document.getElementById("resultArea").style.display = "block";
+            if (currentExtractedUrls.length > 0) {
+                document.getElementById("copyAllBtn").style.display = "inline-block";
+            }
+        }
+
+        function copySingleUrl(url) {
+            navigator.clipboard.writeText(url);
+            showStatus("Copied original asset URL to clipboard!", false);
+            setTimeout(() => { document.getElementById("statusBox").style.display = "none"; }, 2000);
+        }
+
+        function copyAllUrls() {
+            if (!currentExtractedUrls.length) return;
+            navigator.clipboard.writeText(currentExtractedUrls.join("\n"));
+            showStatus(`Copied ${currentExtractedUrls.length} original URLs to clipboard!`, false);
+            setTimeout(() => { document.getElementById("statusBox").style.display = "none"; }, 2500);
+        }
+    </script>
 </body>
 </html>
