@@ -83,7 +83,6 @@
             overflow: hidden;
         }
 
-        /* Dark Mode Flowing Neon Orbs */
         .neon-layer {
             position: absolute;
             inset: 0;
@@ -144,7 +143,6 @@
             100% { transform: translate3d(65px, -40px, 0) scale(0.98); opacity: 0.8; }
         }
 
-        /* Light Mode Subtle Color Blend */
         .light-tint-layer {
             position: absolute;
             inset: 0;
@@ -494,7 +492,7 @@
             color: var(--text-secondary);
         }
 
-        input[type="text"], input[type="password"], input[type="number"], select {
+        input[type="text"], input[type="password"], input[type="email"], input[type="number"], select {
             height: 38px;
             padding: 0 12px;
             border-radius: 8px;
@@ -526,6 +524,7 @@
             cursor: pointer;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
             transition: all 0.15s ease;
         }
@@ -549,6 +548,10 @@
             border-color: var(--border-hover);
             background: var(--row-hover);
         }
+        .btn-success {
+            background: var(--success);
+            color: #fff;
+        }
 
         .toast-banner {
             margin-top: 14px;
@@ -561,6 +564,11 @@
             background: rgba(139, 92, 246, 0.14);
             border: 1px solid rgba(139, 92, 246, 0.34);
             color: var(--accent);
+        }
+        .toast-success {
+            background: rgba(16, 185, 129, 0.14);
+            border: 1px solid rgba(16, 185, 129, 0.36);
+            color: var(--success);
         }
         .toast-error {
             background: rgba(239, 68, 68, 0.14);
@@ -728,7 +736,75 @@
         }
 
         /* =====================================================================
-           7. Status Telemetry Dashboard (Lucida-Style Public Status Page)
+           7. Dedicated Checkout & Pricing Cards
+           ===================================================================== */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        .plan-card {
+            background: var(--bg-elevated);
+            border: 1.5px solid var(--border-subtle);
+            border-radius: var(--radius-card);
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 14px;
+            transition: border-color 0.18s ease, transform 0.18s ease;
+        }
+        .plan-card.featured {
+            border-color: var(--accent);
+            box-shadow: 0 8px 28px rgba(139, 92, 246, 0.16);
+        }
+
+        .plan-price {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin: 4px 0;
+        }
+        .plan-price span {
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .plan-features {
+            margin: 0;
+            padding-left: 18px;
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            line-height: 1.75;
+        }
+
+        .fulfillment-box {
+            display: none;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1.5px solid rgba(16, 185, 129, 0.45);
+            border-radius: var(--radius-card);
+            padding: 20px;
+            margin-bottom: 22px;
+        }
+
+        .issued-key-display {
+            font-family: "Consolas", monospace;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 12px 14px;
+            border-radius: 8px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            color: var(--success);
+            word-break: break-all;
+            margin: 12px 0;
+        }
+
+        /* =====================================================================
+           8. Status Telemetry Dashboard
            ===================================================================== */
         .status-hero {
             display: flex;
@@ -837,7 +913,6 @@
             color: var(--text-tertiary);
         }
 
-        /* Docs & Cards */
         .info-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -872,7 +947,7 @@
         }
 
         /* =====================================================================
-           8. Middle-Click Auto-Scroll Anchor Overlay
+           9. Middle-Click Auto-Scroll Anchor Overlay
            ===================================================================== */
         .autoscroll-reticle {
             position: fixed;
@@ -895,7 +970,7 @@
     </style>
 </head>
 <body>
-    <!-- Ambient Backdrop Stage (Dark Flowing Neon / Light Subtle Blend) -->
+    <!-- Ambient Backdrop Stage -->
     <div class="ambient-stage" aria-hidden="true">
         <div class="neon-layer">
             <div class="neon-orb orb-violet"></div>
@@ -924,11 +999,9 @@
                     </button>
                 </div>
 
-                <!-- Dynamic Module Navigation Container -->
                 <nav class="nav-list" id="sidebarNavList"></nav>
             </div>
 
-            <!-- Sidebar Bottom Theme Cycle Switcher -->
             <div class="sidebar-footer">
                 <button class="nav-item" onclick="cycleThemeScheme()" title="Cycle Theme: Auto / Light / Dark">
                     <span class="nav-icon-box" id="themeIconBox"></span>
@@ -949,7 +1022,6 @@
                 </div>
             </header>
 
-            <!-- Scrollable Stage -->
             <div class="stage-wrapper" id="mainScrollStage">
 
                 <!-- ===========================================================
@@ -965,7 +1037,7 @@
                         <div class="form-grid">
                             <div class="field">
                                 <label for="apiKeyInput">X-API-Key (Stored locally in browser)</label>
-                                <input type="password" id="apiKeyInput" placeholder="km_live_... or km_test_..." />
+                                <input type="password" id="apiKeyInput" placeholder="km_live_... or km_trial_..." />
                             </div>
                             <div class="field">
                                 <label for="platformSelect">Platform Routing</label>
@@ -981,17 +1053,20 @@
                         <div class="form-grid">
                             <div class="field">
                                 <label for="targetInput">Target Post URL, Creator (@user / users/ID), or Tag</label>
-                                <input type="text" id="targetInput" placeholder="e.g. https://x.com/user/status/123 or @username or https://www.pixiv.net/users/12345" />
+                                <input type="text" id="targetInput" placeholder="e.g. https://x.com/user/status/123 or https://www.pixiv.net/users/2188539" />
                             </div>
                             <div class="field">
                                 <label for="credInput">Optional Transient Session Cookie (Never stored on server)</label>
-                                <input type="password" id="credInput" placeholder="Optional: PHPSESSID=... for restricted Pixiv items" />
+                                <input type="password" id="credInput" placeholder="Optional: PHPSESSID=... or X auth_token=..." />
                             </div>
                         </div>
 
                         <div class="btn-row">
                             <button class="btn btn-primary" id="extractBtn" onclick="runExtraction(1)">
                                 Extract Metadata & Original URLs
+                            </button>
+                            <button class="btn btn-secondary" id="trialBtn" onclick="claimFreeTrial()">
+                                Claim 10 Free Trial Credits
                             </button>
                             <div style="display:flex;align-items:center;gap:6px;">
                                 <label for="pageInput" style="font-size:12px;color:var(--text-secondary);font-weight:600;">Batch Page:</label>
@@ -1025,7 +1100,7 @@
                             </div>
                             <div class="btn-row">
                                 <button class="btn btn-primary" onclick="copySelectedUrls(false)" style="height:32px;padding:0 14px;font-size:12px;">Copy Selected Original URLs</button>
-                                <button class="btn btn-secondary" onclick="copySelectedUrls(true)" style="height:32px;padding:0 14px;font-size:12px;" title="Includes Referer headers for Pixiv pximg links">Copy Aria2 Download List</button>
+                                <button class="btn btn-secondary" onclick="copySelectedUrls(true)" style="height:32px;padding:0 14px;font-size:12px;">Copy Aria2 Download List</button>
                             </div>
                         </div>
 
@@ -1034,7 +1109,98 @@
                 </section>
 
                 <!-- ===========================================================
-                     MODULE 1: Developer API & MCP Server Integration
+                     MODULE 1: Dedicated Checkout & Credits Store
+                     =========================================================== -->
+                <section class="view-section" id="view-billing">
+                    <div class="section-header">
+                        <h1>Checkout & API Credits Store</h1>
+                        <p>Instant automated API key provisioning via USDC / USDT or Credit Card On-Ramp. Prepaid credits never expire.</p>
+                    </div>
+
+                    <!-- Auto-Fulfillment Key Reveal Banner -->
+                    <div class="fulfillment-box" id="fulfillmentBox">
+                        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+                            <strong style="color:var(--success);font-size:15px;" id="fulfillmentTitle">Checking Order Fulfillment...</strong>
+                            <span class="tag-pill" id="fulfillmentOrderTag"></span>
+                        </div>
+                        <p style="margin:8px 0 0;font-size:13px;color:var(--text-secondary);" id="fulfillmentDesc">
+                            Once blockchain confirmation completes, your live API key will appear automatically below.
+                        </p>
+                        <div class="issued-key-display" id="issuedKeyBox" style="display:none;"></div>
+                        <div class="btn-row" id="issuedKeyActions" style="display:none;">
+                            <button class="btn btn-success" onclick="copyIssuedKey()">Copy API Key</button>
+                            <button class="btn btn-primary" onclick="loadIssuedKeyToWorkbench()">Load Key into Workbench</button>
+                        </div>
+                    </div>
+
+                    <!-- Buyer Email Input -->
+                    <div class="control-panel">
+                        <div class="form-grid" style="margin-bottom:0;">
+                            <div class="field">
+                                <label for="checkoutEmailInput">Delivery & Recovery Email</label>
+                                <input type="email" id="checkoutEmailInput" placeholder="you@domain.com" />
+                            </div>
+                            <div class="field">
+                                <label>Accepted Payment Methods</label>
+                                <div style="height:38px;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-secondary);">
+                                    <span class="tag-pill">USDC / USDT</span>
+                                    <span class="tag-pill">Visa / Mastercard</span>
+                                    <span>Auto-issued in ~15 seconds</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="toast-banner" id="billingBanner"></div>
+                    </div>
+
+                    <!-- Pricing Plans -->
+                    <div class="pricing-grid">
+                        <div class="plan-card">
+                            <div>
+                                <span class="tag-pill">STARTER PACK</span>
+                                <div class="plan-price">$9.90 <span>USD · one-time</span></div>
+                                <p style="margin:0 0 12px;font-weight:700;color:var(--text-primary);">5,000 Verified API Credits</p>
+                                <ul class="plan-features">
+                                    <li>Up to 5,000 single posts or 25,000 batch posts</li>
+                                    <li>Full access to X, Pixiv & Danbooru engines</li>
+                                    <li>Native MCP Server & REST API access</li>
+                                    <li>Success-only metering (0 cost on errors)</li>
+                                </ul>
+                            </div>
+                            <button class="btn btn-secondary" onclick="startCheckout('starter')" style="width:100%;">
+                                Purchase Starter Pack ($9.90)
+                            </button>
+                        </div>
+
+                        <div class="plan-card featured">
+                            <div>
+                                <span class="tag-pill">PRO AGENT PACK</span>
+                                <div class="plan-price">$39.00 <span>USD · one-time</span></div>
+                                <p style="margin:0 0 12px;font-weight:700;color:var(--text-primary);">30,000 Verified API Credits</p>
+                                <ul class="plan-features">
+                                    <li>Up to 30,000 single posts or 150,000 batch posts</li>
+                                    <li>Ideal for AI dataset curation & autonomous agents</li>
+                                    <li>High-concurrency connection pooling</li>
+                                    <li>Credits never expire</li>
+                                </ul>
+                            </div>
+                            <button class="btn btn-primary" onclick="startCheckout('pro')" style="width:100%;">
+                                Purchase Pro Agent Pack ($39.00)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>Metered Consumption Rules</h3>
+                        <ul>
+                            <li><strong>Single Post Extraction:</strong> 1 Credit per post (includes multi-page manga & Ugoira archives).</li>
+                            <li><strong>Creator / Tag Batch Feed:</strong> 1 Credit per 5 resolved media posts (max 5 Credits for a full 24-post page).</li>
+                            <li><strong>Failure Circuit Breaker:</strong> 0 Credits deducted on HTTP 4xx/5xx or empty timelines.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- ===========================================================
+                     MODULE 2: Developer API & MCP Server Integration
                      =========================================================== -->
                 <section class="view-section" id="view-docs">
                     <div class="section-header">
@@ -1049,7 +1215,7 @@
                             <pre>curl -X POST https://api.kaedemeta.com/v1/extract \
   -H "Content-Type: application/json" \
   -H "X-API-Key: km_live_your_key" \
-  -d '{"target": "@example_artist", "page": 1, "limit": 24}'</pre>
+  -d '{"target": "https://www.pixiv.net/users/2188539", "page": 1, "limit": 24}'</pre>
                         </div>
 
                         <div class="info-card">
@@ -1067,35 +1233,7 @@
                 </section>
 
                 <!-- ===========================================================
-                     MODULE 2: Metered Billing & Prepaid Credits
-                     =========================================================== -->
-                <section class="view-section" id="view-billing">
-                    <div class="section-header">
-                        <h1>Metered Billing & API Credits</h1>
-                        <p>Transparent success-only metering. Zero deduction on failed upstream lookups.</p>
-                    </div>
-
-                    <div class="info-grid">
-                        <div class="info-card">
-                            <h3>Metered Consumption Rules</h3>
-                            <ul>
-                                <li><strong>Single Post Extraction:</strong> 1 Credit per post (includes multi-page manga & Ugoira archives).</li>
-                                <li><strong>Creator / Tag Batch Feed:</strong> 1 Credit per 5 resolved media posts (max 5 Credits for a full 24-post page).</li>
-                                <li><strong>Failure Circuit Breaker:</strong> 0 Credits deducted on HTTP 4xx/5xx or empty timelines.</li>
-                            </ul>
-                        </div>
-
-                        <div class="info-card">
-                            <h3>Prepaid Credit Packs (Never Expires)</h3>
-                            <p><strong>Starter Pack — $9.90 USD:</strong> 5,000 Verified API Credits</p>
-                            <p><strong>Pro Agent Pack — $39.00 USD:</strong> 30,000 Verified API Credits + Priority Concurrency</p>
-                            <p style="margin-top:12px;font-size:12px;color:var(--accent);">Automated Crypto (USDT/USDC) & Instant Key Checkout integration slot ready.</p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ===========================================================
-                     MODULE 3: Public Service Status Telemetry (Lucida Style)
+                     MODULE 3: Public Service Status Telemetry
                      =========================================================== -->
                 <section class="view-section" id="view-status">
                     <div class="section-header">
@@ -1161,16 +1299,16 @@
                 iconSvg: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="5.2" height="5.2" rx="1.2"/><rect x="9.3" y="1.5" width="5.2" height="5.2" rx="1.2"/><rect x="1.5" y="9.3" width="5.2" height="5.2" rx="1.2"/><rect x="9.3" y="9.3" width="5.2" height="5.2" rx="1.2"/></svg>`
             },
             {
+                id: "billing",
+                title: "Buy Credits & Checkout",
+                sectionId: "view-billing",
+                iconSvg: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="3" width="13" height="10" rx="2"/><line x1="1.5" y1="6.5" x2="14.5" y2="6.5"/></svg>`
+            },
+            {
                 id: "docs",
                 title: "API & MCP Docs",
                 sectionId: "view-docs",
                 iconSvg: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="5 4 1.5 8 5 12"/><polyline points="11 4 14.5 8 11 12"/><line x1="9.5" y1="2.5" x2="6.5" y2="13.5"/></svg>`
-            },
-            {
-                id: "billing",
-                title: "Credits & Billing",
-                sectionId: "view-billing",
-                iconSvg: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="3" width="13" height="10" rx="2"/><line x1="1.5" y1="6.5" x2="14.5" y2="6.5"/></svg>`
             },
             {
                 id: "status",
@@ -1351,7 +1489,112 @@
         window.addEventListener("blur", stopMiddleAutoScroll);
 
         /* =====================================================================
-           D. Public Service Status Telemetry Logic
+           D. Dedicated Checkout & Auto Key Fulfillment
+           ===================================================================== */
+        let latestIssuedKey = "";
+
+        function showBillingBanner(msg, type = "info") {
+            const el = document.getElementById("billingBanner");
+            el.textContent = msg;
+            el.className = "toast-banner toast-" + type;
+            el.style.display = "block";
+        }
+
+        async function startCheckout(planId) {
+            const email = document.getElementById("checkoutEmailInput").value.trim();
+            if (!email || !email.includes("@")) {
+                showBillingBanner("Please enter a valid email address first so we can bind your order.", "error");
+                return;
+            }
+
+            localStorage.setItem("km_checkout_email", email);
+            showBillingBanner("Creating encrypted checkout invoice...", "info");
+
+            try {
+                const res = await fetch(`${API_BASE}/v1/billing/create-order`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ plan_id: planId, customer_email: email })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || `HTTP ${res.status}`);
+
+                localStorage.setItem("km_pending_order_id", data.order_id);
+                window.location.href = data.invoice_url;
+            } catch (err) {
+                showBillingBanner(`Checkout initialization failed: ${err.message}`, "error");
+            }
+        }
+
+        async function pollOrderFulfillment(orderId, attempts = 0) {
+            const box = document.getElementById("fulfillmentBox");
+            box.style.display = "block";
+            document.getElementById("fulfillmentOrderTag").textContent = `Order: ${orderId}`;
+
+            try {
+                const res = await fetch(`${API_BASE}/v1/billing/order/${encodeURIComponent(orderId)}`);
+                const data = await res.json();
+                if (data.fulfilled && data.api_key) {
+                    latestIssuedKey = data.api_key;
+                    document.getElementById("fulfillmentTitle").textContent = `Payment Confirmed! (+${data.credits.toLocaleString()} Credits Issued)`;
+                    document.getElementById("fulfillmentDesc").textContent = "Your live API key is ready below and has been saved to this browser.";
+                    const keyBox = document.getElementById("issuedKeyBox");
+                    keyBox.textContent = data.api_key;
+                    keyBox.style.display = "block";
+                    document.getElementById("issuedKeyActions").style.display = "flex";
+
+                    localStorage.setItem("km_api_key", data.api_key);
+                    localStorage.removeItem("km_pending_order_id");
+                    document.getElementById("apiKeyInput").value = data.api_key;
+                    document.getElementById("topCreditPill").textContent = `Credits: ${data.credits.toLocaleString()}`;
+                    return;
+                }
+            } catch (e) {}
+
+            if (attempts < 30) {
+                setTimeout(() => pollOrderFulfillment(orderId, attempts + 1), 3000);
+            } else {
+                document.getElementById("fulfillmentTitle").textContent = "Awaiting Blockchain Confirmation";
+                document.getElementById("fulfillmentDesc").textContent = "Your payment is still confirming on-chain. Refresh this page in a minute to reveal your key.";
+            }
+        }
+
+        function copyIssuedKey() {
+            if (!latestIssuedKey) return;
+            navigator.clipboard.writeText(latestIssuedKey);
+            showBillingBanner("API Key copied to clipboard!", "success");
+        }
+
+        function loadIssuedKeyToWorkbench() {
+            if (latestIssuedKey) {
+                document.getElementById("apiKeyInput").value = latestIssuedKey;
+            }
+            switchModule("workbench");
+        }
+
+        async function claimFreeTrial() {
+            const btn = document.getElementById("trialBtn");
+            btn.disabled = true;
+            btn.textContent = "Generating Trial Key...";
+            try {
+                const res = await fetch(`${API_BASE}/v1/trial-key`, { method: "POST" });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || `HTTP ${res.status}`);
+
+                document.getElementById("apiKeyInput").value = data.api_key;
+                localStorage.setItem("km_api_key", data.api_key);
+                document.getElementById("topCreditPill").textContent = `Credits: ${data.credits}`;
+                showBanner(`Free trial key issued (${data.credits} credits) and loaded automatically!`, "success");
+            } catch (err) {
+                showBanner(`Trial claim notice: ${err.message}`, "error");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Claim 10 Free Trial Credits";
+            }
+        }
+
+        /* =====================================================================
+           E. Public Service Status Telemetry Logic
            ===================================================================== */
         const SERVICE_COMPONENTS = [
             { id: "gateway", name: "REST API Edge Gateway", desc: "Cloudflare Anycast + US-West Core" },
@@ -1421,7 +1664,7 @@
         }
 
         /* =====================================================================
-           E. Extraction Workbench Logic
+           F. Extraction Workbench Logic
            ===================================================================== */
         let extractedPostsState = [];
 
@@ -1433,10 +1676,10 @@
             return rawUrl;
         }
 
-        function showBanner(msg, isError = false) {
+        function showBanner(msg, type = "info") {
             const el = document.getElementById("statusBanner");
             el.textContent = msg;
-            el.className = "toast-banner " + (isError ? "toast-error" : "toast-info");
+            el.className = "toast-banner toast-" + type;
             el.style.display = "block";
         }
 
@@ -1456,15 +1699,15 @@
             const page = overridePage !== null ? overridePage : Math.max(1, parseInt(pageEl.value || "1", 10));
             pageEl.value = String(page);
 
-            if (!apiKey) return showBanner("Please enter your X-API-Key first.", true);
-            if (!target) return showBanner("Please enter a post URL, @creator, or tag.", true);
+            if (!apiKey) return showBanner("Please enter your X-API-Key or click 'Claim 10 Free Trial Credits'.", "error");
+            if (!target) return showBanner("Please enter a post URL, @creator, or tag.", "error");
 
             localStorage.setItem("km_api_key", apiKey);
 
             const btn = document.getElementById("extractBtn");
             btn.disabled = true;
             btn.textContent = "Extracting...";
-            showBanner("Resolving upstream metadata & lossless original assets...", false);
+            showBanner("Resolving upstream metadata & lossless original assets...", "info");
 
             try {
                 const payload = { target, platform, page, limit: 24 };
@@ -1487,7 +1730,7 @@
                     `Credits: ${data.credits_remaining.toLocaleString()} (-${data.credits_cost})`;
                 renderWorkbenchResults(data);
             } catch (err) {
-                showBanner(`Extraction failed (0 credits deducted): ${err.message}`, true);
+                showBanner(`Extraction failed (0 credits deducted): ${err.message}`, "error");
             } finally {
                 btn.disabled = false;
                 btn.textContent = "Extract Metadata & Original URLs";
@@ -1581,12 +1824,12 @@
             if (!post) return;
             const urls = post.assets.map(a => a.original_url).join("\n");
             navigator.clipboard.writeText(urls);
-            showBanner(`Copied ${post.assets.length} original URL(s) for post ${post.post_id}!`, false);
+            showBanner(`Copied ${post.assets.length} original URL(s) for post ${post.post_id}!`, "success");
         }
 
         function copySelectedUrls(asAria2) {
             const selected = extractedPostsState.filter(p => p.selected);
-            if (!selected.length) return showBanner("No posts selected.", true);
+            if (!selected.length) return showBanner("No posts selected.", "error");
 
             const lines = [];
             selected.forEach(post => {
@@ -1608,12 +1851,12 @@
                 asAria2
                     ? `Copied Aria2 input manifest for ${selected.length} posts (with Referer headers)!`
                     : `Copied ${lines.length} original asset URLs to clipboard!`,
-                false
+                "success"
             );
         }
 
         /* =====================================================================
-           F. Shell Initialization
+           G. Shell Initialization
            ===================================================================== */
         window.addEventListener("DOMContentLoaded", () => {
             if (localStorage.getItem("km_sidebar_expanded") === "1") {
@@ -1622,8 +1865,18 @@
             const savedKey = localStorage.getItem("km_api_key");
             if (savedKey) document.getElementById("apiKeyInput").value = savedKey;
 
+            const savedEmail = localStorage.getItem("km_checkout_email");
+            if (savedEmail) document.getElementById("checkoutEmailInput").value = savedEmail;
+
             renderSidebarNav();
             applyEffectiveTheme();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get("order_id") || localStorage.getItem("km_pending_order_id");
+            if (orderId) {
+                switchModule("billing");
+                pollOrderFulfillment(orderId);
+            }
         });
     </script>
 </body>
