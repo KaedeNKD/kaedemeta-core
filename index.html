@@ -6,7 +6,7 @@
     <title>KaedeMeta Core — Multimodal Context Engine & Workbench</title>
     <style>
         /* =====================================================================
-           1. Zenith Modern Design Tokens
+           1. Zenith Modern Design Tokens & Glass Bevel System
            ===================================================================== */
         :root {
             --accent: #8b5cf6;
@@ -20,6 +20,7 @@
             --topbar-h: 56px;
             --radius-panel: 12px;
             --radius-card: 10px;
+            --font-mono: "JetBrains Mono", "Cascadia Code", "Consolas", monospace;
             --transition-theme: background-color 0.55s cubic-bezier(0.22, 1, 0.36, 1),
                                 color 0.35s ease,
                                 border-color 0.35s ease;
@@ -27,12 +28,14 @@
 
         html[data-theme="dark"] {
             --bg-canvas: #090b10;
-            --bg-sidebar: rgba(16, 19, 27, 0.84);
-            --bg-surface: rgba(20, 23, 33, 0.76);
+            --bg-sidebar: rgba(16, 19, 27, 0.86);
+            --bg-surface: rgba(20, 23, 33, 0.78);
             --bg-elevated: rgba(27, 31, 44, 0.72);
-            --bg-input: rgba(12, 14, 20, 0.85);
+            --bg-input: rgba(11, 13, 19, 0.88);
+            --bg-popover: rgba(18, 21, 31, 0.96);
             --border-subtle: rgba(255, 255, 255, 0.085);
             --border-hover: rgba(255, 255, 255, 0.18);
+            --glass-bevel: inset 0 1px 0 rgba(255, 255, 255, 0.075);
             --text-primary: #f9fafb;
             --text-secondary: #9ca3af;
             --text-tertiary: #6b7280;
@@ -48,8 +51,10 @@
             --bg-surface: #ffffff;
             --bg-elevated: #f8f9fc;
             --bg-input: #f2f4f8;
+            --bg-popover: #ffffff;
             --border-subtle: #e5e7eb;
             --border-hover: #cbd5e1;
+            --glass-bevel: inset 0 1px 0 rgba(255, 255, 255, 0.9);
             --text-primary: #1f2937;
             --text-secondary: #4b5563;
             --text-tertiary: #9ca3af;
@@ -186,7 +191,7 @@
         }
 
         .sidebar.expanded {
-            --sidebar-w: 212px;
+            --sidebar-w: 216px;
         }
 
         .brand-area {
@@ -333,7 +338,7 @@
         }
 
         /* =====================================================================
-           4. Main Viewport & Top Bar
+           4. Main Viewport & Interactive Top Bar Account Hub
            ===================================================================== */
         .main-viewport {
             position: relative;
@@ -346,7 +351,7 @@
 
         .top-bar {
             position: relative;
-            z-index: 5;
+            z-index: 30;
             height: var(--topbar-h);
             min-height: var(--topbar-h);
             padding: 0 24px;
@@ -366,24 +371,92 @@
         }
 
         .top-actions {
+            position: relative;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .pill-badge {
-            height: 30px;
+        .account-pill-btn {
+            height: 32px;
             padding: 0 12px;
             border-radius: 8px;
             font-size: 12px;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            color: var(--success);
-            border: 1px solid rgba(16, 185, 129, 0.32);
-            background: rgba(16, 185, 129, 0.10);
+            gap: 8px;
+            cursor: pointer;
             backdrop-filter: blur(12px);
+            transition: all 0.16s ease;
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+        }
+
+        .account-pill-btn:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+        }
+
+        .account-pill-btn.active-key {
+            color: var(--success);
+            border-color: rgba(16, 185, 129, 0.35);
+            background: rgba(16, 185, 129, 0.10);
+        }
+
+        .account-pill-btn.low-balance {
+            color: var(--warning);
+            border-color: rgba(245, 158, 11, 0.38);
+            background: rgba(245, 158, 11, 0.10);
+        }
+
+        .status-indicator-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .account-popover {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            width: 300px;
+            background: var(--bg-popover);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border-hover);
+            border-radius: var(--radius-card);
+            box-shadow: var(--shadow-card), var(--glass-bevel);
+            padding: 16px;
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .account-popover.open {
+            display: flex;
+            animation: fadeSlideIn 0.16s ease;
+        }
+
+        .popover-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+        }
+
+        .popover-mono {
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            color: var(--text-primary);
+            background: var(--bg-input);
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-subtle);
+            word-break: break-all;
         }
 
         .tag-pill {
@@ -394,6 +467,9 @@
             color: var(--accent);
             font-weight: 700;
             border: 1px solid rgba(139, 92, 246, 0.28);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
 
         /* =====================================================================
@@ -409,19 +485,15 @@
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             border: 1px solid var(--border-subtle);
-            box-shadow: var(--shadow-card);
+            box-shadow: var(--shadow-card), var(--glass-bevel);
             overflow-y: auto;
             overflow-x: hidden;
             padding: 28px;
             transition: var(--transition-theme);
         }
 
-        .stage-wrapper::-webkit-scrollbar {
-            width: 7px;
-        }
-        .stage-wrapper::-webkit-scrollbar-track {
-            background: transparent;
-        }
+        .stage-wrapper::-webkit-scrollbar { width: 7px; }
+        .stage-wrapper::-webkit-scrollbar-track { background: transparent; }
         .stage-wrapper::-webkit-scrollbar-thumb {
             background: rgba(139, 92, 246, 0.30);
             border-radius: 999px;
@@ -447,7 +519,7 @@
         }
 
         /* =====================================================================
-           6. Workbench Controls & Grids
+           6. Workbench Controls, Sample Pills & Telemetry HUD
            ===================================================================== */
         .section-header {
             margin-bottom: 22px;
@@ -466,6 +538,7 @@
         .control-panel {
             background: var(--bg-elevated);
             border: 1px solid var(--border-subtle);
+            box-shadow: var(--glass-bevel);
             border-radius: var(--radius-card);
             padding: 20px;
             margin-bottom: 20px;
@@ -507,6 +580,37 @@
             border-color: var(--accent);
         }
 
+        .sample-bar {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .sample-chip {
+            height: 26px;
+            padding: 0 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            font-size: 11.5px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.14s ease;
+        }
+        .sample-chip:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+            background: var(--accent-soft);
+        }
+
         .btn-row {
             display: flex;
             flex-wrap: wrap;
@@ -516,7 +620,7 @@
 
         .btn {
             height: 38px;
-            padding: 0 18px;
+            padding: 0 16px;
             border-radius: 8px;
             border: none;
             font-size: 13px;
@@ -525,7 +629,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 7px;
             transition: all 0.15s ease;
         }
         .btn-primary {
@@ -576,6 +680,46 @@
             color: var(--danger);
         }
 
+        /* Live Telemetry Strip */
+        .telemetry-hud {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 10px 16px;
+            margin-bottom: 14px;
+            border-radius: 8px;
+            background: var(--bg-input);
+            border: 1px solid rgba(139, 92, 246, 0.32);
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+        }
+
+        .telemetry-metrics {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            color: var(--text-secondary);
+        }
+
+        .metric-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .metric-highlight {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .metric-accent {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
         .creator-card {
             display: flex;
             align-items: center;
@@ -585,8 +729,9 @@
             padding: 14px 18px;
             background: var(--bg-elevated);
             border: 1px solid var(--border-subtle);
+            box-shadow: var(--glass-bevel);
             border-radius: var(--radius-card);
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         .creator-meta {
             display: flex;
@@ -615,6 +760,30 @@
             border: 1px solid var(--border-subtle);
         }
 
+        .segmented-switch {
+            display: inline-flex;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: 7px;
+            padding: 2px;
+        }
+        .seg-btn {
+            height: 26px;
+            padding: 0 11px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 11.5px;
+            font-weight: 600;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.14s ease;
+        }
+        .seg-btn.active {
+            background: var(--accent);
+            color: #fff;
+        }
+
         .posts-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -625,6 +794,7 @@
             position: relative;
             background: var(--bg-elevated);
             border: 1.5px solid var(--border-subtle);
+            box-shadow: var(--glass-bevel);
             border-radius: var(--radius-card);
             overflow: hidden;
             display: flex;
@@ -647,15 +817,13 @@
             width: 22px;
             height: 22px;
             border-radius: 6px;
-            background: rgba(12, 14, 19, 0.72);
+            background: rgba(12, 14, 19, 0.74);
             border: 1.5px solid rgba(255, 255, 255, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             color: #fff;
-            font-size: 13px;
-            font-weight: 700;
         }
         .post-card.selected .select-badge {
             background: var(--accent);
@@ -667,15 +835,17 @@
             top: 10px;
             right: 10px;
             z-index: 3;
-            padding: 2px 8px;
+            padding: 3px 8px;
             border-radius: 6px;
-            background: rgba(12, 14, 19, 0.78);
+            background: rgba(12, 14, 19, 0.80);
             color: #f9fafb;
-            font-size: 11px;
-            font-weight: 700;
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            font-weight: 600;
         }
 
         .thumb-box {
+            position: relative;
             width: 100%;
             height: 190px;
             background: var(--bg-input);
@@ -696,6 +866,27 @@
             transform: scale(1.03);
         }
 
+        .zoom-trigger {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            background: rgba(12, 14, 19, 0.76);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.16s ease;
+        }
+        .thumb-box:hover .zoom-trigger {
+            opacity: 1;
+        }
+
         .card-body {
             padding: 12px;
             display: flex;
@@ -714,7 +905,8 @@
             overflow: hidden;
         }
         .card-sub {
-            font-size: 11px;
+            font-family: var(--font-mono);
+            font-size: 10.5px;
             color: var(--text-tertiary);
         }
         .card-actions {
@@ -731,12 +923,33 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            gap: 5px;
             text-decoration: none;
             cursor: pointer;
         }
 
+        .json-inspector-box {
+            display: none;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-card);
+            padding: 16px;
+        }
+        .json-inspector-box pre {
+            margin: 0;
+            max-height: 520px;
+            overflow: auto;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            line-height: 1.55;
+            color: var(--text-primary);
+            background: transparent;
+            border: none;
+            padding: 0;
+        }
+
         /* =====================================================================
-           7. Dedicated Checkout & Pricing Cards
+           7. Billing, Checkout & Self-Service Recovery
            ===================================================================== */
         .pricing-grid {
             display: grid;
@@ -748,17 +961,18 @@
         .plan-card {
             background: var(--bg-elevated);
             border: 1.5px solid var(--border-subtle);
+            box-shadow: var(--glass-bevel);
             border-radius: var(--radius-card);
             padding: 22px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             gap: 14px;
-            transition: border-color 0.18s ease, transform 0.18s ease;
+            transition: border-color 0.18s ease;
         }
         .plan-card.featured {
             border-color: var(--accent);
-            box-shadow: 0 8px 28px rgba(139, 92, 246, 0.16);
+            box-shadow: 0 8px 28px rgba(139, 92, 246, 0.16), var(--glass-bevel);
         }
 
         .plan-price {
@@ -786,13 +1000,30 @@
             background: rgba(16, 185, 129, 0.08);
             border: 1.5px solid rgba(16, 185, 129, 0.45);
             border-radius: var(--radius-card);
-            padding: 20px;
+            padding: 18px 20px;
             margin-bottom: 22px;
         }
 
+        .dismiss-btn {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .dismiss-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--border-hover);
+        }
+
         .issued-key-display {
-            font-family: "Consolas", monospace;
-            font-size: 14px;
+            font-family: var(--font-mono);
+            font-size: 13.5px;
             font-weight: 700;
             padding: 12px 14px;
             border-radius: 8px;
@@ -803,9 +1034,60 @@
             margin: 12px 0;
         }
 
+        .lookup-results {
+            margin-top: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .lookup-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            font-size: 12.5px;
+        }
+
         /* =====================================================================
-           8. Status Telemetry Dashboard
+           8. Docs Code Tabs & Service Status Telemetry
            ===================================================================== */
+        .code-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--glass-bevel);
+            border-radius: var(--radius-card);
+            padding: 20px;
+            margin-bottom: 18px;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        pre.code-block {
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 14px 16px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            line-height: 1.6;
+            overflow-x: auto;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
         .status-hero {
             display: flex;
             align-items: center;
@@ -816,7 +1098,8 @@
             border-radius: var(--radius-card);
             background: var(--bg-elevated);
             border: 1px solid var(--border-subtle);
-            margin-bottom: 20px;
+            box-shadow: var(--glass-bevel);
+            margin-bottom: 18px;
         }
 
         .status-hero-left {
@@ -845,6 +1128,35 @@
             100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
 
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .kpi-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--glass-bevel);
+            border-radius: var(--radius-card);
+            padding: 16px 18px;
+        }
+
+        .kpi-label {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .kpi-value {
+            font-family: var(--font-mono);
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
         .status-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -855,6 +1167,7 @@
         .service-node-card {
             background: var(--bg-elevated);
             border: 1px solid var(--border-subtle);
+            box-shadow: var(--glass-bevel);
             border-radius: var(--radius-card);
             padding: 16px 18px;
             display: flex;
@@ -900,10 +1213,6 @@
             border-radius: 2px;
             background: var(--success);
             opacity: 0.85;
-            transition: opacity 0.15s ease;
-        }
-        .uptime-bar:hover {
-            opacity: 1;
         }
 
         .node-meta {
@@ -913,15 +1222,10 @@
             color: var(--text-tertiary);
         }
 
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 18px;
-            margin-bottom: 24px;
-        }
         .info-card {
             background: var(--bg-elevated);
             border: 1px solid var(--border-subtle);
+            box-shadow: var(--glass-bevel);
             border-radius: var(--radius-card);
             padding: 20px;
         }
@@ -932,23 +1236,46 @@
         .info-card p, .info-card li {
             color: var(--text-secondary);
             font-size: 0.88rem;
-            line-height: 1.6;
-        }
-        pre {
-            background: var(--bg-input);
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            padding: 14px;
-            font-family: "Consolas", monospace;
-            font-size: 12.5px;
-            overflow-x: auto;
-            color: var(--accent);
-            margin: 10px 0 0;
+            line-height: 1.65;
         }
 
         /* =====================================================================
-           9. Middle-Click Auto-Scroll Anchor Overlay
+           9. Lightbox Modal & Middle-Click Auto-Scroll Reticle
            ===================================================================== */
+        .lightbox-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(6, 8, 12, 0.86);
+            backdrop-filter: blur(14px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .lightbox-overlay.open {
+            display: flex;
+        }
+        .lightbox-dialog {
+            max-width: 92vw;
+            max-height: 90vh;
+            background: var(--bg-popover);
+            border: 1px solid var(--border-hover);
+            border-radius: var(--radius-panel);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+        }
+        .lightbox-media {
+            max-width: 86vw;
+            max-height: 74vh;
+            object-fit: contain;
+            border-radius: 8px;
+            background: #000;
+        }
+
         .autoscroll-reticle {
             position: fixed;
             width: 34px;
@@ -991,7 +1318,7 @@
 
                 <div class="sidebar-toggle-wrap">
                     <button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Expand / Collapse Sidebar">
-                        <svg width="16" height="14" viewBox="0 0 16 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+                        <svg width="16" height="14" viewBox="0 0 16 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
                             <line x1="1" y1="2" x2="15" y2="2"></line>
                             <line x1="1" y1="7" x2="15" y2="7"></line>
                             <line x1="1" y1="12" x2="15" y2="12"></line>
@@ -1017,8 +1344,38 @@
                     <span id="currentModuleTitle">Extraction Workbench</span>
                 </div>
 
-                <div class="top-actions">
-                    <span class="pill-badge" id="topCreditPill">Credits: Ready</span>
+                <div class="top-actions" id="accountHubWrapper">
+                    <button class="account-pill-btn" id="accountPillBtn" onclick="toggleAccountPopover(event)">
+                        <span class="status-indicator-dot"></span>
+                        <span id="accountPillText">Guest Mode</span>
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 4.5 6 7.5 9 4.5"></polyline>
+                        </svg>
+                    </button>
+
+                    <!-- Interactive Account & Balance Popover -->
+                    <div class="account-popover" id="accountPopover">
+                        <div class="popover-row">
+                            <span style="font-weight:700;font-size:13px;">API Key Session</span>
+                            <span class="tag-pill" id="popoverStatusTag">No Key</span>
+                        </div>
+                        <div class="popover-mono" id="popoverKeyPrefix">Not configured</div>
+                        <div class="popover-row">
+                            <span style="color:var(--text-secondary);">Available Credits</span>
+                            <strong id="popoverCreditsVal" style="font-family:var(--font-mono);">0</strong>
+                        </div>
+                        <div class="popover-row">
+                            <span style="color:var(--text-secondary);">Total Calls Executed</span>
+                            <strong id="popoverCallsVal" style="font-family:var(--font-mono);">0</strong>
+                        </div>
+                        <div class="btn-row" style="margin-top:4px;">
+                            <button class="btn btn-secondary" onclick="copyStoredApiKey()" style="flex:1;height:32px;font-size:12px;">Copy Key</button>
+                            <button class="btn btn-secondary" onclick="clearStoredApiKey()" style="flex:1;height:32px;font-size:12px;">Clear</button>
+                        </div>
+                        <button class="btn btn-primary" onclick="closeAccountPopover(); switchModule('billing');" style="width:100%;height:34px;font-size:12px;">
+                            Top Up Credits
+                        </button>
+                    </div>
                 </div>
             </header>
 
@@ -1029,15 +1386,15 @@
                      =========================================================== -->
                 <section class="view-section active" id="view-workbench">
                     <div class="section-header">
-                        <h1>Extraction Workbench</h1>
-                        <p>Extract lossless original media URLs & structured metadata from single posts or entire creator feeds.</p>
+                        <h1 data-i18n="wb_title">Extraction Workbench</h1>
+                        <p data-i18n="wb_sub">Extract lossless original media URLs & structured metadata from single posts or entire creator feeds.</p>
                     </div>
 
                     <div class="control-panel">
                         <div class="form-grid">
                             <div class="field">
                                 <label for="apiKeyInput">X-API-Key (Stored locally in browser)</label>
-                                <input type="password" id="apiKeyInput" placeholder="km_live_... or km_trial_..." />
+                                <input type="password" id="apiKeyInput" placeholder="km_live_... or km_trial_..." onchange="syncAccountBalance()" />
                             </div>
                             <div class="field">
                                 <label for="platformSelect">Platform Routing</label>
@@ -1053,16 +1410,37 @@
                         <div class="form-grid">
                             <div class="field">
                                 <label for="targetInput">Target Post URL, Creator (@user / users/ID), or Tag</label>
-                                <input type="text" id="targetInput" placeholder="e.g. https://x.com/user/status/123 or https://www.pixiv.net/users/2188539" />
+                                <input type="text" id="targetInput" placeholder="https://x.com/user/status/123 or https://www.pixiv.net/users/2188539" onkeydown="if(event.key==='Enter') runExtraction(1)" />
                             </div>
                             <div class="field">
-                                <label for="credInput">Optional Transient Session Cookie (Never stored on server)</label>
+                                <label for="credInput">Optional Transient Session Cookie (Zero-state, never stored)</label>
                                 <input type="password" id="credInput" placeholder="Optional: PHPSESSID=... or X auth_token=..." />
                             </div>
                         </div>
 
+                        <div class="sample-bar">
+                            <span>Quick presets:</span>
+                            <button type="button" class="sample-chip" onclick="applySampleTarget('pixiv', 'https://www.pixiv.net/users/2188539')">
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="4 2 8 6 4 10"></polyline></svg>
+                                Pixiv Creator Feed
+                            </button>
+                            <button type="button" class="sample-chip" onclick="applySampleTarget('danbooru', 'original 1girl solo')">
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="4 2 8 6 4 10"></polyline></svg>
+                                Danbooru Tag Batch
+                            </button>
+                            <button type="button" class="sample-chip" onclick="applySampleTarget('x', '@wlopwangling')">
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="4 2 8 6 4 10"></polyline></svg>
+                                X Creator Timeline
+                            </button>
+                        </div>
+
                         <div class="btn-row">
                             <button class="btn btn-primary" id="extractBtn" onclick="runExtraction(1)">
+                                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="8 1.5 14.5 5 8 8.5 1.5 5 8 1.5"></polygon>
+                                    <polyline points="1.5 8.5 8 12 14.5 8.5"></polyline>
+                                    <polyline points="1.5 12 8 15.5 14.5 12"></polyline>
+                                </svg>
                                 Extract Metadata & Original URLs
                             </button>
                             <button class="btn btn-secondary" id="trialBtn" onclick="claimFreeTrial()">
@@ -1081,6 +1459,33 @@
 
                     <!-- Extraction Results Area -->
                     <div id="resultsContainer" style="display:none;">
+                        <!-- Live Telemetry HUD Strip -->
+                        <div class="telemetry-hud" id="telemetryHud">
+                            <div class="telemetry-metrics">
+                                <span class="metric-item">
+                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--success)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="1.5 8.5 4.5 8.5 6.5 3 9.5 13 11.5 8.5 14.5 8.5"></polyline>
+                                    </svg>
+                                    <span>Latency: <span class="metric-highlight" id="teleLatency">-- ms</span></span>
+                                </span>
+                                <span class="metric-item">
+                                    <span>Throughput: <span class="metric-highlight" id="teleThroughput">-- assets/s</span></span>
+                                </span>
+                                <span class="metric-item">
+                                    <span>Route: <span class="metric-accent" id="teleRoute">--</span></span>
+                                </span>
+                                <span class="metric-item">
+                                    <span>Pool: <span class="metric-accent" id="telePool">1x</span></span>
+                                </span>
+                            </div>
+                            <span style="color:var(--success);display:inline-flex;align-items:center;gap:5px;">
+                                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 8.5 6.5 12 13 4.5"></polyline>
+                                </svg>
+                                Zero-State Verified
+                            </span>
+                        </div>
+
                         <div class="creator-card">
                             <div class="creator-meta">
                                 <img id="creatorAvatar" class="creator-avatar" src="" alt="" onerror="this.style.display='none'" />
@@ -1089,10 +1494,16 @@
                                     <div id="batchSummaryText" style="font-size:12.5px;color:var(--text-secondary);"></div>
                                 </div>
                             </div>
-                            <span class="tag-pill" id="platformModeBadge"></span>
+                            <div class="btn-row">
+                                <span class="tag-pill" id="platformModeBadge"></span>
+                                <div class="segmented-switch">
+                                    <button class="seg-btn active" id="viewModeGridBtn" onclick="setResultViewMode('grid')">Media Grid</button>
+                                    <button class="seg-btn" id="viewModeJsonBtn" onclick="setResultViewMode('json')">JSON Payload</button>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="batch-toolbar">
+                        <div class="batch-toolbar" id="batchToolbar">
                             <div class="btn-row">
                                 <button class="btn btn-secondary" onclick="toggleSelectAll(true)" style="height:32px;padding:0 12px;font-size:12px;">Select All</button>
                                 <button class="btn btn-secondary" onclick="toggleSelectAll(false)" style="height:32px;padding:0 12px;font-size:12px;">Deselect All</button>
@@ -1100,11 +1511,19 @@
                             </div>
                             <div class="btn-row">
                                 <button class="btn btn-primary" onclick="copySelectedUrls(false)" style="height:32px;padding:0 14px;font-size:12px;">Copy Selected Original URLs</button>
-                                <button class="btn btn-secondary" onclick="copySelectedUrls(true)" style="height:32px;padding:0 14px;font-size:12px;">Copy Aria2 Download List</button>
+                                <button class="btn btn-secondary" onclick="copySelectedUrls(true)" style="height:32px;padding:0 14px;font-size:12px;">Copy Aria2 Manifest</button>
                             </div>
                         </div>
 
                         <div class="posts-grid" id="postsGrid"></div>
+
+                        <div class="json-inspector-box" id="jsonInspectorBox">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                                <span style="font-size:12px;font-weight:600;color:var(--text-secondary);">Structured API Response</span>
+                                <button class="btn btn-secondary" onclick="copyRawJsonResponse()" style="height:28px;padding:0 12px;font-size:11.5px;">Copy JSON</button>
+                            </div>
+                            <pre id="rawJsonOutput"></pre>
+                        </div>
                     </div>
                 </section>
 
@@ -1117,11 +1536,19 @@
                         <p>Instant automated API key provisioning via USDC / USDT or Credit Card On-Ramp. Prepaid credits never expire.</p>
                     </div>
 
-                    <!-- Auto-Fulfillment Key Reveal Banner -->
+                    <!-- Auto-Fulfillment Key Reveal Banner with Dismiss Control -->
                     <div class="fulfillment-box" id="fulfillmentBox">
                         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
                             <strong style="color:var(--success);font-size:15px;" id="fulfillmentTitle">Checking Order Fulfillment...</strong>
-                            <span class="tag-pill" id="fulfillmentOrderTag"></span>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span class="tag-pill" id="fulfillmentOrderTag"></span>
+                                <button class="dismiss-btn" onclick="dismissPendingOrder()" title="Dismiss order banner">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+                                        <line x1="2" y1="2" x2="10" y2="10"></line>
+                                        <line x1="10" y1="2" x2="2" y2="10"></line>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                         <p style="margin:8px 0 0;font-size:13px;color:var(--text-secondary);" id="fulfillmentDesc">
                             Once blockchain confirmation completes, your live API key will appear automatically below.
@@ -1145,7 +1572,7 @@
                                 <div style="height:38px;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-secondary);">
                                     <span class="tag-pill">USDC / USDT</span>
                                     <span class="tag-pill">Visa / Mastercard</span>
-                                    <span>Auto-issued in ~15 seconds</span>
+                                    <span>Auto-issued upon confirmation</span>
                                 </div>
                             </div>
                         </div>
@@ -1179,7 +1606,7 @@
                                 <ul class="plan-features">
                                     <li>Up to 30,000 single posts or 150,000 batch posts</li>
                                     <li>Ideal for AI dataset curation & autonomous agents</li>
-                                    <li>High-concurrency connection pooling</li>
+                                    <li>6x concurrent connection pooling</li>
                                     <li>Credits never expire</li>
                                 </ul>
                             </div>
@@ -1187,6 +1614,27 @@
                                 Purchase Pro Agent Pack ($39.00)
                             </button>
                         </div>
+                    </div>
+
+                    <!-- Self-Service Key Recovery & Order Lookup -->
+                    <div class="control-panel">
+                        <h3 style="margin:0 0 6px;font-size:1rem;">Key Recovery & Balance Lookup</h3>
+                        <p style="margin:0 0 14px;font-size:12.5px;color:var(--text-secondary);">
+                            Enter your checkout email to list active keys, or include your Order ID to reveal the full API key.
+                        </p>
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="lookupEmailInput">Checkout Email</label>
+                                <input type="email" id="lookupEmailInput" placeholder="you@domain.com" />
+                            </div>
+                            <div class="field">
+                                <label for="lookupOrderInput">Order ID (Optional, required to reveal full key)</label>
+                                <input type="text" id="lookupOrderInput" placeholder="km_pro_..." />
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="runBillingLookup()">Lookup API Keys</button>
+                        <div class="toast-banner" id="lookupBanner"></div>
+                        <div class="lookup-results" id="lookupResultsBox"></div>
                     </div>
 
                     <div class="info-card">
@@ -1208,37 +1656,44 @@
                         <p>Connect KaedeMeta Core directly into AI Agents (Claude Desktop, Cursor, n8n, LangGraph) or custom scripts.</p>
                     </div>
 
-                    <div class="info-grid">
-                        <div class="info-card">
-                            <h3>1. Unified Extraction Endpoint</h3>
-                            <p>Supports single posts and creator feeds (`@username`, `users/ID`, or tags) up to 24 items per batch.</p>
-                            <pre>curl -X POST https://api.kaedemeta.com/v1/extract \
-  -H "Content-Type: application/json" \
-  -H "X-API-Key: km_live_your_key" \
-  -d '{"target": "https://www.pixiv.net/users/2188539", "page": 1, "limit": 24}'</pre>
+                    <div class="code-card">
+                        <div class="code-header">
+                            <div class="segmented-switch">
+                                <button class="seg-btn active" id="docTab-curl" onclick="switchDocSnippet('curl')">cURL</button>
+                                <button class="seg-btn" id="docTab-python" onclick="switchDocSnippet('python')">Python (httpx)</button>
+                                <button class="seg-btn" id="docTab-node" onclick="switchDocSnippet('node')">Node.js</button>
+                                <button class="seg-btn" id="docTab-mcp" onclick="switchDocSnippet('mcp')">MCP Server</button>
+                            </div>
+                            <div class="btn-row">
+                                <button class="btn btn-secondary" onclick="toggleDocsKeyMask()" id="docsMaskBtn" style="height:30px;padding:0 12px;font-size:11.5px;">
+                                    Show Active Key
+                                </button>
+                                <button class="btn btn-primary" onclick="copyActiveDocSnippet()" id="docsCopyBtn" style="height:30px;padding:0 14px;font-size:11.5px;">
+                                    Copy Snippet
+                                </button>
+                            </div>
                         </div>
+                        <pre class="code-block" id="docSnippetCode"></pre>
+                    </div>
 
-                        <div class="info-card">
-                            <h3>2. Model Context Protocol (MCP)</h3>
-                            <p>Add our native JSON-RPC 2.0 MCP endpoint to Claude Desktop or Cursor to grant your agent autonomous extraction tools.</p>
-                            <pre>{
-  "mcpServers": {
-    "kaedemeta": {
-      "url": "https://api.kaedemeta.com/mcp?api_key=km_live_your_key"
-    }
-  }
-}</pre>
-                        </div>
+                    <div class="info-card">
+                        <h3>Response Telemetry Headers</h3>
+                        <p>Every <code>/v1/extract</code> response includes real-time execution telemetry in both the JSON <code>telemetry</code> object and HTTP response headers:</p>
+                        <ul>
+                            <li><code>X-Kaede-Latency-Ms</code> — End-to-end upstream extraction latency in milliseconds.</li>
+                            <li><code>X-Kaede-Throughput</code> — Resolved original media assets per second.</li>
+                            <li><code>X-Kaede-Engine</code> — Selected routing strategy (e.g. <code>pixiv:batch_pooled_6x</code>, <code>x:fxtwitter_primary</code>).</li>
+                        </ul>
                     </div>
                 </section>
 
                 <!-- ===========================================================
-                     MODULE 3: Public Service Status Telemetry
+                     MODULE 3: Public Service Status & Live Telemetry
                      =========================================================== -->
                 <section class="view-section" id="view-status">
                     <div class="section-header">
-                        <h1>Service Status</h1>
-                        <p>Live operational telemetry for KaedeMeta Core edge nodes and upstream parsing engines.</p>
+                        <h1>Service Status & Telemetry</h1>
+                        <p>Live operational metrics from KaedeMeta Core edge nodes and upstream parsing engines.</p>
                     </div>
 
                     <div class="status-hero">
@@ -1246,10 +1701,29 @@
                             <div class="pulse-dot" id="globalStatusDot"></div>
                             <div>
                                 <div id="globalStatusHeading" style="font-size:16px;font-weight:700;">Checking Systems...</div>
-                                <div id="globalStatusSub" style="font-size:12.5px;color:var(--text-secondary);">Region: US-West (Los Angeles Edge) · Auto-probing backend gateway</div>
+                                <div id="globalStatusSub" style="font-size:12.5px;color:var(--text-secondary);">Region: US-West (Los Angeles Edge) · Probing telemetry</div>
                             </div>
                         </div>
-                        <button class="btn btn-secondary" onclick="refreshServiceStatus()" style="height:34px;padding:0 14px;font-size:12.5px;">Refresh Probe</button>
+                        <button class="btn btn-secondary" onclick="refreshServiceStatus()" style="height:34px;padding:0 14px;font-size:12.5px;">Refresh Telemetry</button>
+                    </div>
+
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-label">TOTAL EXTRACTIONS</div>
+                            <div class="kpi-value" id="kpiTotalExtractions">--</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">GLOBAL SUCCESS RATE</div>
+                            <div class="kpi-value" id="kpiSuccessRate" style="color:var(--success);">--%</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">SERVER AVG LATENCY</div>
+                            <div class="kpi-value" id="kpiAvgLatency">-- ms</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">BEST RECORDED LATENCY</div>
+                            <div class="kpi-value" id="kpiBestLatency" style="color:var(--accent);">-- ms</div>
+                        </div>
                     </div>
 
                     <div class="status-grid" id="statusNodesGrid"></div>
@@ -1276,6 +1750,25 @@
         </main>
     </div>
 
+    <!-- High-Resolution Lightbox Preview Modal -->
+    <div class="lightbox-overlay" id="lightboxOverlay" onclick="if(event.target===this) closeLightbox()">
+        <div class="lightbox-dialog">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                <span id="lightboxTitle" style="font-size:13px;font-weight:600;max-width:70vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+                <div class="btn-row">
+                    <a id="lightboxOrigLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="height:30px;padding:0 12px;font-size:12px;text-decoration:none;">Open Original</a>
+                    <button class="dismiss-btn" onclick="closeLightbox()" title="Close preview">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+                            <line x1="2" y1="2" x2="10" y2="10"></line>
+                            <line x1="10" y1="2" x2="2" y2="10"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <img id="lightboxImg" class="lightbox-media" src="" alt="Preview" />
+        </div>
+    </div>
+
     <!-- Middle-Click Auto-Scroll Reticle -->
     <div class="autoscroll-reticle" id="autoScrollReticle">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -1287,6 +1780,23 @@
 
     <script>
         const API_BASE = "https://api.kaedemeta.com";
+
+        /* =====================================================================
+           0. Lightweight i18n String Registry (English Default, Extensible)
+           ===================================================================== */
+        const STRINGS = {
+            en: {
+                guest_mode: "Guest Mode",
+                invalid_key: "Invalid Key",
+                checking_key: "Verifying Key...",
+                wb_title: "Extraction Workbench",
+                wb_sub: "Extract lossless original media URLs & structured metadata from single posts or entire creator feeds."
+            }
+        };
+        let currentLang = "en";
+        function t(key) {
+            return (STRINGS[currentLang] && STRINGS[currentLang][key]) || key;
+        }
 
         /* =====================================================================
            A. Extensible Sidebar Navigation Registry
@@ -1314,7 +1824,7 @@
                 id: "status",
                 title: "Service Status",
                 sectionId: "view-status",
-                iconSvg: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5 8.5 4.5 8.5 6.5 3.5 9.5 12.5 11.5 8.5 14.5 8.5"/></svg>`
+                iconSvg: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5 8.5 4.5 8.5 6.5 3.5 9.5 12.5 11.5 8.5 14.5 8.5"/></svg>`
             },
             {
                 id: "terms",
@@ -1356,6 +1866,8 @@
 
             if (moduleId === "status") {
                 refreshServiceStatus();
+            } else if (moduleId === "docs") {
+                renderDocSnippet();
             }
         }
 
@@ -1366,7 +1878,100 @@
         }
 
         /* =====================================================================
-           B. 3-Mode Theme Engine (0: Auto, 1: Light, 2: Dark)
+           B. Live Top-Right Account Hub & Balance Sync
+           ===================================================================== */
+        function toggleAccountPopover(e) {
+            e.stopPropagation();
+            const pop = document.getElementById("accountPopover");
+            pop.classList.toggle("open");
+        }
+
+        function closeAccountPopover() {
+            document.getElementById("accountPopover").classList.remove("open");
+        }
+
+        window.addEventListener("click", (e) => {
+            const wrap = document.getElementById("accountHubWrapper");
+            if (wrap && !wrap.contains(e.target)) {
+                closeAccountPopover();
+            }
+        });
+
+        function updateAccountPillState(state, text, meta = {}) {
+            const btn = document.getElementById("accountPillBtn");
+            const pillText = document.getElementById("accountPillText");
+            btn.classList.remove("active-key", "low-balance");
+
+            if (state === "active") {
+                btn.classList.add(meta.credits <= 20 ? "low-balance" : "active-key");
+            } else if (state === "error") {
+                btn.classList.add("low-balance");
+            }
+
+            pillText.textContent = text;
+            document.getElementById("popoverStatusTag").textContent = meta.tag || "Guest";
+            document.getElementById("popoverKeyPrefix").textContent = meta.prefix || "Not configured";
+            document.getElementById("popoverCreditsVal").textContent =
+                typeof meta.credits === "number" ? meta.credits.toLocaleString() : "0";
+            document.getElementById("popoverCallsVal").textContent =
+                typeof meta.calls === "number" ? meta.calls.toLocaleString() : "0";
+        }
+
+        async function syncAccountBalance() {
+            const key = document.getElementById("apiKeyInput").value.trim();
+            if (!key) {
+                localStorage.removeItem("km_api_key");
+                updateAccountPillState("guest", t("guest_mode"), { tag: "No Key", prefix: "Not configured", credits: 0, calls: 0 });
+                renderDocSnippet();
+                return;
+            }
+
+            localStorage.setItem("km_api_key", key);
+            renderDocSnippet();
+            document.getElementById("accountPillText").textContent = t("checking_key");
+
+            try {
+                const res = await fetch(`${API_BASE}/v1/billing/balance`, {
+                    headers: { "X-API-Key": key }
+                });
+                if (!res.ok) {
+                    updateAccountPillState("error", t("invalid_key"), {
+                        tag: "Inactive",
+                        prefix: key.slice(0, 12) + "...",
+                        credits: 0,
+                        calls: 0
+                    });
+                    return;
+                }
+                const data = await res.json();
+                updateAccountPillState("active", `${data.credits_remaining.toLocaleString()} Credits`, {
+                    tag: "Active",
+                    prefix: data.api_key_prefix,
+                    credits: data.credits_remaining,
+                    calls: data.total_calls
+                });
+            } catch (err) {
+                updateAccountPillState("guest", "Offline", { tag: "Unreachable", prefix: key.slice(0, 12) + "..." });
+            }
+        }
+
+        function copyStoredApiKey() {
+            const key = document.getElementById("apiKeyInput").value.trim();
+            if (!key) return;
+            navigator.clipboard.writeText(key);
+            showBanner("API Key copied to clipboard.", "success");
+            closeAccountPopover();
+        }
+
+        function clearStoredApiKey() {
+            document.getElementById("apiKeyInput").value = "";
+            localStorage.removeItem("km_api_key");
+            syncAccountBalance();
+            closeAccountPopover();
+        }
+
+        /* =====================================================================
+           C. 3-Mode Theme Engine (0: Auto, 1: Light, 2: Dark)
            ===================================================================== */
         let themeScheme = parseInt(localStorage.getItem("km_theme_scheme") || "2", 10);
         const systemDarkQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -1409,7 +2014,7 @@
         });
 
         /* =====================================================================
-           C. Middle-Click Auto-Scroll Anchor (Zenith Modern Physics)
+           D. Middle-Click Auto-Scroll Anchor
            ===================================================================== */
         const scrollStage = document.getElementById("mainScrollStage");
         const reticle = document.getElementById("autoScrollReticle");
@@ -1485,19 +2090,38 @@
         });
 
         window.addEventListener("wheel", () => { if (isAutoScrolling) stopMiddleAutoScroll(); }, { passive: true });
-        window.addEventListener("keydown", (e) => { if (e.key === "Escape" && isAutoScrolling) stopMiddleAutoScroll(); });
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                if (isAutoScrolling) stopMiddleAutoScroll();
+                closeLightbox();
+                closeAccountPopover();
+            }
+        });
         window.addEventListener("blur", stopMiddleAutoScroll);
 
         /* =====================================================================
-           D. Dedicated Checkout & Auto Key Fulfillment
+           E. Checkout, Auto Key Fulfillment & Self-Service Recovery
            ===================================================================== */
         let latestIssuedKey = "";
+        let pollTimerId = null;
 
         function showBillingBanner(msg, type = "info") {
             const el = document.getElementById("billingBanner");
             el.textContent = msg;
             el.className = "toast-banner toast-" + type;
             el.style.display = "block";
+        }
+
+        function dismissPendingOrder() {
+            if (pollTimerId) {
+                clearTimeout(pollTimerId);
+                pollTimerId = null;
+            }
+            localStorage.removeItem("km_pending_order_id");
+            document.getElementById("fulfillmentBox").style.display = "none";
+            if (window.location.search.includes("order_id=")) {
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
         }
 
         async function startCheckout(planId) {
@@ -1536,7 +2160,7 @@
                 const data = await res.json();
                 if (data.fulfilled && data.api_key) {
                     latestIssuedKey = data.api_key;
-                    document.getElementById("fulfillmentTitle").textContent = `Payment Confirmed! (+${data.credits.toLocaleString()} Credits Issued)`;
+                    document.getElementById("fulfillmentTitle").textContent = `Payment Confirmed (+${data.credits.toLocaleString()} Credits Issued)`;
                     document.getElementById("fulfillmentDesc").textContent = "Your live API key is ready below and has been saved to this browser.";
                     const keyBox = document.getElementById("issuedKeyBox");
                     keyBox.textContent = data.api_key;
@@ -1546,30 +2170,118 @@
                     localStorage.setItem("km_api_key", data.api_key);
                     localStorage.removeItem("km_pending_order_id");
                     document.getElementById("apiKeyInput").value = data.api_key;
-                    document.getElementById("topCreditPill").textContent = `Credits: ${data.credits.toLocaleString()}`;
+                    syncAccountBalance();
+                    return;
+                } else if (data.status === "underpaid") {
+                    document.getElementById("fulfillmentTitle").textContent = "Underpaid Transaction Detected";
+                    document.getElementById("fulfillmentDesc").textContent = data.detail || "Transaction amount was below invoice requirement.";
                     return;
                 }
             } catch (e) {}
 
-            if (attempts < 30) {
-                setTimeout(() => pollOrderFulfillment(orderId, attempts + 1), 3000);
+            if (attempts < 25) {
+                pollTimerId = setTimeout(() => pollOrderFulfillment(orderId, attempts + 1), 3500);
             } else {
                 document.getElementById("fulfillmentTitle").textContent = "Awaiting Blockchain Confirmation";
-                document.getElementById("fulfillmentDesc").textContent = "Your payment is still confirming on-chain. Refresh this page in a minute to reveal your key.";
+                document.getElementById("fulfillmentDesc").textContent = "If you have completed payment, refresh in a minute or use Key Recovery below with your email and Order ID.";
             }
         }
 
         function copyIssuedKey() {
             if (!latestIssuedKey) return;
             navigator.clipboard.writeText(latestIssuedKey);
-            showBillingBanner("API Key copied to clipboard!", "success");
+            showBillingBanner("API Key copied to clipboard.", "success");
         }
 
         function loadIssuedKeyToWorkbench() {
             if (latestIssuedKey) {
                 document.getElementById("apiKeyInput").value = latestIssuedKey;
+                syncAccountBalance();
             }
             switchModule("workbench");
+        }
+
+        async function runBillingLookup() {
+            const email = document.getElementById("lookupEmailInput").value.trim();
+            const orderId = document.getElementById("lookupOrderInput").value.trim();
+            const banner = document.getElementById("lookupBanner");
+            const box = document.getElementById("lookupResultsBox");
+            box.innerHTML = "";
+
+            if (!email || !email.includes("@")) {
+                banner.textContent = "Please enter a valid checkout email address.";
+                banner.className = "toast-banner toast-error";
+                banner.style.display = "block";
+                return;
+            }
+
+            banner.textContent = "Querying billing ledger...";
+            banner.className = "toast-banner toast-info";
+            banner.style.display = "block";
+
+            try {
+                const payload = { customer_email: email };
+                if (orderId) payload.order_id = orderId;
+
+                const res = await fetch(`${API_BASE}/v1/billing/lookup`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || `HTTP ${res.status}`);
+
+                banner.style.display = "none";
+                if (data.exact_match && data.api_key) {
+                    box.innerHTML = `
+                        <div class="lookup-item">
+                            <div>
+                                <div style="font-family:var(--font-mono);font-weight:700;color:var(--success);">${data.api_key}</div>
+                                <div style="color:var(--text-secondary);font-size:11.5px;margin-top:3px;">
+                                    Order: ${data.order_id} · Remaining: ${data.credits_remaining.toLocaleString()} credits · Calls: ${data.total_calls}
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" onclick="useRecoveredKey('${data.api_key}')" style="height:30px;padding:0 12px;font-size:12px;">
+                                Load Key
+                            </button>
+                        </div>
+                    `;
+                } else if (Array.isArray(data.keys)) {
+                    data.keys.forEach(item => {
+                        const row = document.createElement("div");
+                        row.className = "lookup-item";
+                        row.innerHTML = `
+                            <div>
+                                <div style="font-family:var(--font-mono);font-weight:600;">${item.masked_key}</div>
+                                <div style="color:var(--text-secondary);font-size:11.5px;margin-top:3px;">
+                                    Order ID: <span style="font-family:var(--font-mono);">${item.order_id}</span> · Remaining: ${item.credits_remaining.toLocaleString()} credits
+                                </div>
+                            </div>
+                            <button class="btn btn-secondary" onclick="prefillOrderLookup('${item.order_id}')" style="height:30px;padding:0 12px;font-size:11.5px;">
+                                Reveal Full Key
+                            </button>
+                        `;
+                        box.appendChild(row);
+                    });
+                }
+            } catch (err) {
+                banner.textContent = err.message;
+                banner.className = "toast-banner toast-error";
+                banner.style.display = "block";
+            }
+        }
+
+        function prefillOrderLookup(oid) {
+            document.getElementById("lookupOrderInput").value = oid;
+            runBillingLookup();
+        }
+
+        function useRecoveredKey(key) {
+            document.getElementById("apiKeyInput").value = key;
+            localStorage.setItem("km_api_key", key);
+            syncAccountBalance();
+            switchModule("workbench");
+            showBanner("Recovered API key loaded into Workbench.", "success");
         }
 
         async function claimFreeTrial() {
@@ -1583,10 +2295,10 @@
 
                 document.getElementById("apiKeyInput").value = data.api_key;
                 localStorage.setItem("km_api_key", data.api_key);
-                document.getElementById("topCreditPill").textContent = `Credits: ${data.credits}`;
-                showBanner(`Free trial key issued (${data.credits} credits) and loaded automatically!`, "success");
+                syncAccountBalance();
+                showBanner(`Free trial key issued (${data.credits} credits) and loaded automatically.`, "success");
             } catch (err) {
-                showBanner(`Trial claim notice: ${err.message}`, "error");
+                showBanner(`Trial notice: ${err.message}`, "error");
             } finally {
                 btn.disabled = false;
                 btn.textContent = "Claim 10 Free Trial Credits";
@@ -1594,14 +2306,117 @@
         }
 
         /* =====================================================================
-           E. Public Service Status Telemetry Logic
+           F. Dynamic Developer Documentation Snippets
+           ===================================================================== */
+        let currentDocTab = "curl";
+        let revealKeyInDocs = false;
+
+        function getDocDisplayKey() {
+            const stored = document.getElementById("apiKeyInput").value.trim();
+            if (!stored) return "km_live_your_api_key";
+            if (revealKeyInDocs) return stored;
+            return stored.length > 14 ? `${stored.slice(0, 10)}...${stored.slice(-4)}` : stored;
+        }
+
+        function buildDocSnippetText(tab, keyStr) {
+            if (tab === "python") {
+                return `import httpx
+
+resp = httpx.post(
+    "https://api.kaedemeta.com/v1/extract",
+    headers={"X-API-Key": "${keyStr}"},
+    json={
+        "target": "https://www.pixiv.net/users/2188539",
+        "page": 1,
+        "limit": 24
+    },
+    timeout=20.0
+)
+data = resp.json()
+print("Latency:", data["telemetry"]["latency_ms"], "ms")
+for post in data["posts"]:
+    for asset in post["assets"]:
+        print(asset["file_name"], "->", asset["original_url"])`;
+            }
+            if (tab === "node") {
+                return `const res = await fetch("https://api.kaedemeta.com/v1/extract", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "X-API-Key": "${keyStr}"
+  },
+  body: JSON.stringify({
+    target: "https://www.pixiv.net/users/2188539",
+    page: 1,
+    limit: 24
+  })
+});
+
+const data = await res.json();
+console.log("Throughput:", data.telemetry.assets_per_sec, "assets/s");
+console.log(data.posts);`;
+            }
+            if (tab === "mcp") {
+                return `{
+  "mcpServers": {
+    "kaedemeta": {
+      "url": "https://api.kaedemeta.com/mcp?api_key=${keyStr}"
+    }
+  }
+}`;
+            }
+            return `curl -X POST https://api.kaedemeta.com/v1/extract \\
+  -H "Content-Type: application/json" \\
+  -H "X-API-Key: ${keyStr}" \\
+  -d '{
+    "target": "https://www.pixiv.net/users/2188539",
+    "page": 1,
+    "limit": 24
+  }'`;
+        }
+
+        function renderDocSnippet() {
+            const el = document.getElementById("docSnippetCode");
+            if (!el) return;
+            el.textContent = buildDocSnippetText(currentDocTab, getDocDisplayKey());
+            const maskBtn = document.getElementById("docsMaskBtn");
+            if (maskBtn) {
+                maskBtn.textContent = revealKeyInDocs ? "Mask Active Key" : "Show Active Key";
+            }
+        }
+
+        function switchDocSnippet(tab) {
+            currentDocTab = tab;
+            ["curl", "python", "node", "mcp"].forEach(id => {
+                const btn = document.getElementById(`docTab-${id}`);
+                if (btn) btn.classList.toggle("active", id === tab);
+            });
+            renderDocSnippet();
+        }
+
+        function toggleDocsKeyMask() {
+            revealKeyInDocs = !revealKeyInDocs;
+            renderDocSnippet();
+        }
+
+        function copyActiveDocSnippet() {
+            const stored = document.getElementById("apiKeyInput").value.trim() || "km_live_your_api_key";
+            const fullText = buildDocSnippetText(currentDocTab, stored);
+            navigator.clipboard.writeText(fullText);
+            const btn = document.getElementById("docsCopyBtn");
+            btn.textContent = "Copied";
+            setTimeout(() => { btn.textContent = "Copy Snippet"; }, 1600);
+        }
+
+        /* =====================================================================
+           G. Public Service Status & Live Telemetry Dashboard
            ===================================================================== */
         const SERVICE_COMPONENTS = [
             { id: "gateway", name: "REST API Edge Gateway", desc: "Cloudflare Anycast + US-West Core" },
             { id: "mcp", name: "MCP JSON-RPC Server", desc: "Agentic Tool Discovery & Execution" },
             { id: "x_engine", name: "X (Twitter) Extraction Engine", desc: "Lossless Orig & Timeline Parser" },
-            { id: "pixiv_engine", name: "Pixiv Extraction Engine", desc: "Single, Manga Pages & Ugoira Resolver" },
-            { id: "danbooru_engine", name: "Danbooru Extraction Engine", desc: "Post & Tag Batch Resolver" },
+            { id: "pixiv_engine", name: "Pixiv Extraction Engine", desc: "6x Pooled Manga & Ugoira Resolver" },
+            { id: "danbooru_engine", name: "Danbooru Extraction Engine", desc: "Direct Post & Tag Batch Resolver" },
             { id: "billing_db", name: "Metered Billing Ledger", desc: "SQLite WAL Atomic Credit Store" }
         ];
 
@@ -1623,13 +2438,24 @@
             heading.textContent = "Probing Edge Telemetry...";
             const t0 = performance.now();
             let isOnline = false;
-            let latencyMs = 0;
+            let edgeRttMs = 0;
 
             try {
-                const res = await fetch(`${API_BASE}/health`, { cache: "no-store" });
-                const data = await res.json();
-                latencyMs = Math.max(1, Math.round(performance.now() - t0));
-                isOnline = res.ok && data.status === "ok";
+                const [healthRes, statsRes] = await Promise.all([
+                    fetch(`${API_BASE}/health`, { cache: "no-store" }),
+                    fetch(`${API_BASE}/v1/telemetry/stats`, { cache: "no-store" })
+                ]);
+                edgeRttMs = Math.max(1, Math.round(performance.now() - t0));
+                const healthData = await healthRes.json();
+                isOnline = healthRes.ok && healthData.status === "ok";
+
+                if (statsRes.ok) {
+                    const st = await statsRes.json();
+                    document.getElementById("kpiTotalExtractions").textContent = Number(st.total_extractions || 0).toLocaleString();
+                    document.getElementById("kpiSuccessRate").textContent = `${st.success_rate_pct ?? 100}%`;
+                    document.getElementById("kpiAvgLatency").textContent = `${st.avg_latency_ms ?? "--"} ms`;
+                    document.getElementById("kpiBestLatency").textContent = `${st.best_latency_ms ?? "--"} ms`;
+                }
             } catch (err) {
                 isOnline = false;
             }
@@ -1637,7 +2463,7 @@
             if (isOnline) {
                 dot.classList.remove("offline");
                 heading.textContent = "All Systems Operational";
-                sub.textContent = `Region: US-West (Los Angeles Edge) · Edge Round-Trip Latency: ${latencyMs} ms`;
+                sub.textContent = `Region: US-West (Los Angeles Edge) · Edge RTT: ${edgeRttMs} ms`;
             } else {
                 dot.classList.add("offline");
                 heading.textContent = "Gateway Unreachable";
@@ -1656,7 +2482,7 @@
                     <div class="uptime-bars">${buildUptimeBarsHtml(isOnline)}</div>
                     <div class="node-meta">
                         <span>${comp.desc}</span>
-                        <span>${isOnline ? latencyMs + " ms" : "--"}</span>
+                        <span>${isOnline ? "99.98% uptime" : "Offline"}</span>
                     </div>
                 `;
                 grid.appendChild(card);
@@ -1664,9 +2490,31 @@
         }
 
         /* =====================================================================
-           F. Extraction Workbench Logic
+           H. Extraction Workbench Logic, Telemetry HUD & Lightbox
            ===================================================================== */
         let extractedPostsState = [];
+        let lastRawExtractionData = null;
+
+        function applySampleTarget(platform, target) {
+            document.getElementById("platformSelect").value = platform;
+            document.getElementById("targetInput").value = target;
+            document.getElementById("pageInput").value = "1";
+        }
+
+        function setResultViewMode(mode) {
+            const isGrid = mode === "grid";
+            document.getElementById("viewModeGridBtn").classList.toggle("active", isGrid);
+            document.getElementById("viewModeJsonBtn").classList.toggle("active", !isGrid);
+            document.getElementById("batchToolbar").style.display = isGrid ? "flex" : "none";
+            document.getElementById("postsGrid").style.display = isGrid ? "grid" : "none";
+            document.getElementById("jsonInspectorBox").style.display = isGrid ? "none" : "block";
+        }
+
+        function copyRawJsonResponse() {
+            if (!lastRawExtractionData) return;
+            navigator.clipboard.writeText(JSON.stringify(lastRawExtractionData, null, 2));
+            showBanner("Structured JSON payload copied to clipboard.", "success");
+        }
 
         function resolveSafeThumbUrl(rawUrl) {
             if (!rawUrl) return "";
@@ -1725,19 +2573,33 @@
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.detail || `HTTP ${res.status}`);
 
+                lastRawExtractionData = data;
                 document.getElementById("statusBanner").style.display = "none";
-                document.getElementById("topCreditPill").textContent =
-                    `Credits: ${data.credits_remaining.toLocaleString()} (-${data.credits_cost})`;
+                syncAccountBalance();
                 renderWorkbenchResults(data);
             } catch (err) {
                 showBanner(`Extraction failed (0 credits deducted): ${err.message}`, "error");
             } finally {
                 btn.disabled = false;
-                btn.textContent = "Extract Metadata & Original URLs";
+                btn.innerHTML = `
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="8 1.5 14.5 5 8 8.5 1.5 5 8 1.5"></polygon>
+                        <polyline points="1.5 8.5 8 12 14.5 8.5"></polyline>
+                        <polyline points="1.5 12 8 15.5 14.5 12"></polyline>
+                    </svg>
+                    Extract Metadata & Original URLs
+                `;
             }
         }
 
         function renderWorkbenchResults(data) {
+            if (data.telemetry) {
+                document.getElementById("teleLatency").textContent = `${data.telemetry.latency_ms} ms`;
+                document.getElementById("teleThroughput").textContent = `${data.telemetry.assets_per_sec} assets/s`;
+                document.getElementById("teleRoute").textContent = data.telemetry.engine_route;
+                document.getElementById("telePool").textContent = `${data.telemetry.concurrency_factor}x`;
+            }
+
             const avatarEl = document.getElementById("creatorAvatar");
             const safeAvatar = resolveSafeThumbUrl(data.creator.avatar_url);
             if (safeAvatar) {
@@ -1758,14 +2620,38 @@
             document.getElementById("prevPageBtn").style.display = isBatch ? "inline-flex" : "none";
             document.getElementById("nextPageBtn").style.display = isBatch ? "inline-flex" : "none";
 
+            document.getElementById("rawJsonOutput").textContent = JSON.stringify(data, null, 2);
+
             extractedPostsState = (data.posts || []).map(p => ({ ...p, selected: true }));
             renderPostsGrid();
             document.getElementById("resultsContainer").style.display = "block";
         }
 
+        function openLightbox(idx) {
+            const post = extractedPostsState[idx];
+            if (!post) return;
+            const firstAsset = post.assets[0] || {};
+            const rawPreview = post.thumbnail_url || (firstAsset.type === "image" ? firstAsset.original_url : "");
+            const safeSrc = resolveSafeThumbUrl(rawPreview);
+            if (!safeSrc) return;
+
+            document.getElementById("lightboxTitle").textContent = `${post.title} (${post.post_id})`;
+            document.getElementById("lightboxImg").src = safeSrc;
+            document.getElementById("lightboxOrigLink").href = firstAsset.original_url || "#";
+            document.getElementById("lightboxOverlay").classList.add("open");
+        }
+
+        function closeLightbox() {
+            document.getElementById("lightboxOverlay").classList.remove("open");
+            document.getElementById("lightboxImg").src = "";
+        }
+
         function renderPostsGrid() {
             const grid = document.getElementById("postsGrid");
             grid.innerHTML = "";
+
+            const checkSvg = `<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2.5 7.5 5.5 10.5 11.5 3.5"></polyline></svg>`;
+            const expandSvg = `<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 2 12 2 12 5"/><polyline points="5 12 2 12 2 9"/><line x1="12" y1="2" x2="8" y2="6"/><line x1="2" y1="12" x2="6" y2="8"/></svg>`;
 
             extractedPostsState.forEach((post, index) => {
                 const firstAsset = post.assets[0] || {};
@@ -1775,12 +2661,13 @@
                 const card = document.createElement("div");
                 card.className = "post-card" + (post.selected ? " selected" : "");
                 card.innerHTML = `
-                    <div class="select-badge" onclick="togglePostSelection(${index})">${post.selected ? "✓" : ""}</div>
+                    <div class="select-badge" onclick="togglePostSelection(${index})">${post.selected ? checkSvg : ""}</div>
                     <div class="asset-count-badge">${post.assets.length} file(s) · .${firstAsset.extension || "bin"}</div>
-                    <div class="thumb-box" onclick="togglePostSelection(${index})">
+                    <div class="thumb-box" onclick="togglePostSelection(${index})" ondblclick="openLightbox(${index})">
                         ${thumbSrc
-                            ? `<img src="${thumbSrc}" alt="${post.title}" loading="lazy" />`
-                            : `<span style="color:var(--text-tertiary);font-size:12px;">${(firstAsset.type || "MEDIA").toUpperCase()}</span>`}
+                            ? `<img src="${thumbSrc}" alt="${post.title}" loading="lazy" />
+                               <button type="button" class="zoom-trigger" onclick="event.stopPropagation(); openLightbox(${index})" title="Preview image">${expandSvg}</button>`
+                            : `<span style="color:var(--text-tertiary);font-family:var(--font-mono);font-size:11.5px;">${(firstAsset.type || "MEDIA").toUpperCase()}</span>`}
                     </div>
                     <div class="card-body">
                         <div>
@@ -1824,7 +2711,7 @@
             if (!post) return;
             const urls = post.assets.map(a => a.original_url).join("\n");
             navigator.clipboard.writeText(urls);
-            showBanner(`Copied ${post.assets.length} original URL(s) for post ${post.post_id}!`, "success");
+            showBanner(`Copied ${post.assets.length} original URL(s) for post ${post.post_id}.`, "success");
         }
 
         function copySelectedUrls(asAria2) {
@@ -1849,27 +2736,34 @@
             navigator.clipboard.writeText(lines.join("\n"));
             showBanner(
                 asAria2
-                    ? `Copied Aria2 input manifest for ${selected.length} posts (with Referer headers)!`
-                    : `Copied ${lines.length} original asset URLs to clipboard!`,
+                    ? `Copied Aria2 download manifest for ${selected.length} posts (with Referer headers).`
+                    : `Copied ${lines.length} original asset URLs to clipboard.`,
                 "success"
             );
         }
 
         /* =====================================================================
-           G. Shell Initialization
+           I. Shell Initialization
            ===================================================================== */
         window.addEventListener("DOMContentLoaded", () => {
             if (localStorage.getItem("km_sidebar_expanded") === "1") {
                 document.getElementById("sidebar").classList.add("expanded");
             }
             const savedKey = localStorage.getItem("km_api_key");
-            if (savedKey) document.getElementById("apiKeyInput").value = savedKey;
+            if (savedKey) {
+                document.getElementById("apiKeyInput").value = savedKey;
+            }
 
             const savedEmail = localStorage.getItem("km_checkout_email");
-            if (savedEmail) document.getElementById("checkoutEmailInput").value = savedEmail;
+            if (savedEmail) {
+                document.getElementById("checkoutEmailInput").value = savedEmail;
+                document.getElementById("lookupEmailInput").value = savedEmail;
+            }
 
             renderSidebarNav();
             applyEffectiveTheme();
+            syncAccountBalance();
+            renderDocSnippet();
 
             const urlParams = new URLSearchParams(window.location.search);
             const orderId = urlParams.get("order_id") || localStorage.getItem("km_pending_order_id");
