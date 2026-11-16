@@ -1,1 +1,91 @@
-KMC
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KaedeMeta Core — High-Concurrency Multimodal Context API</title>
+    <style>
+        :root { --bg: #0f1115; --card: #181b21; --text: #f3f4f6; --muted: #9ca3af; --accent: #8b5cf6; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; line-height: 1.6; }
+        .container { max-width: 960px; margin: 0 auto; padding: 48px 24px; }
+        header { text-align: center; padding-bottom: 48px; border-bottom: 1px solid #27272a; }
+        h1 { font-size: 2.5rem; margin-bottom: 12px; letter-spacing: -0.02em; }
+        .subtitle { color: var(--muted); font-size: 1.15rem; max-width: 640px; margin: 0 auto 24px; }
+        .badge { display: inline-block; background: rgba(139, 92, 246, 0.15); color: #c4b5fd; padding: 4px 12px; border-radius: 999px; font-size: 0.85rem; font-weight: 600; margin-bottom: 16px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; margin: 48px 0; }
+        .card { background: var(--card); border: 1px solid #27272a; border-radius: 12px; padding: 24px; }
+        .card h3 { margin-top: 0; color: #fff; }
+        .price { font-size: 2rem; font-weight: 700; margin: 12px 0; }
+        .price span { font-size: 0.9rem; color: var(--muted); font-weight: 400; }
+        ul { padding-left: 20px; color: var(--muted); }
+        li { margin-bottom: 8px; }
+        pre { background: #090a0d; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem; color: #a7f3d0; border: 1px solid #27272a; }
+        footer { margin-top: 64px; padding-top: 32px; border-top: 1px solid #27272a; font-size: 0.85rem; color: var(--muted); }
+        .legal-box { background: #13161b; padding: 20px; border-radius: 8px; margin-top: 24px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="badge">RESTful API & MCP Protocol Ready</div>
+            <h1>KaedeMeta Core</h1>
+            <p class="subtitle">Low-latency structured metadata normalization and public web context extraction infrastructure built for modern AI Agents and automated pipelines.</p>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <h3>Zero-State Architecture</h3>
+                <p style="color: var(--muted);">Stateless API execution with zero media storage. Extracts clean JSON schemas from publicly accessible URLs in milliseconds.</p>
+            </div>
+            <div class="card">
+                <h3>Native AI Agent Integration</h3>
+                <p style="color: var(--muted);">Compatible with OpenAPI, LangGraph, n8n, and Model Context Protocol (MCP) workflows with deterministic JSON responses.</p>
+            </div>
+            <div class="card">
+                <h3>Success-Only Metering</h3>
+                <p style="color: var(--muted);">Credits are deducted strictly upon verified HTTP 200 structured payload delivery. Failed upstream lookups incur zero cost.</p>
+            </div>
+        </div>
+
+        <h2>API Quickstart</h2>
+        <pre>curl -X POST https://api.kaedemeta.core/v1/extract \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: km_live_your_api_key" \
+  -d '{"target": "https://x.com/example/status/1234567890"}'</pre>
+
+        <h2 style="margin-top: 48px;">Prepaid API Credit Packages</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Starter Pack</h3>
+                <div class="price">$9.90 <span>/ one-time</span></div>
+                <ul>
+                    <li>5,000 Verified API Extraction Credits</li>
+                    <li>Never expires</li>
+                    <li>Standard concurrency rate limit</li>
+                    <li>Instant API Key delivery via email</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Pro Agent Pack</h3>
+                <div class="price">$39.00 <span>/ one-time</span></div>
+                <ul>
+                    <li>30,000 Verified API Extraction Credits</li>
+                    <li>Never expires</li>
+                    <li>High-concurrency priority routing</li>
+                    <li>MCP Server & Webhook support</li>
+                </ul>
+            </div>
+        </div>
+
+        <footer>
+            <div class="legal-box">
+                <strong>Terms of Service, Privacy & Refund Policy</strong>
+                <p><strong>1. Scope of Service:</strong> KaedeMeta Core provides automated technical metadata parsing for publicly accessible web endpoints. Users are solely responsible for ensuring their API usage complies with applicable laws and target platform terms. KaedeMeta Core does not host, cache, or distribute copyrighted media files.</p>
+                <p><strong>2. Digital Delivery & Refunds:</strong> API Keys and prepaid credit balances are provisioned automatically upon payment confirmation. Full refunds are available within 7 days of purchase if fewer than 100 API credits have been consumed.</p>
+                <p><strong>3. Contact & Support:</strong> For technical support or billing inquiries, contact <a href="mailto:supaizumi@hotmail.com" style="color: #c4b5fd;">supaizumi@hotmail.com</a>.</p>
+            </div>
+            <p style="text-align: center; margin-top: 24px;">&copy; 2026 KaedeMeta Core. Operated by Independent Software Developer.</p>
+        </footer>
+    </div>
+</body>
+</html>
