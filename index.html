@@ -2126,9 +2126,10 @@
         function inferPlatformFromText(raw) {
             const s = raw.trim().toLowerCase();
             if (!s) return "auto";
-            if (s.includes("x.com/") || s.includes("twitter.com/") || s.startsWith("@")) return "x";
+            if (s.includes("x.com/") || s.includes("twitter.com/") || s.startsWith("@") || s.startsWith("#")) return "x";
             if (s.includes("pixiv.net/") || s.startsWith("uid:")) return "pixiv";
             if (s.includes("danbooru.donmai.us/")) return "danbooru";
+            if (/[\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af]/.test(s)) return "pixiv";
             return "auto";
         }
 
