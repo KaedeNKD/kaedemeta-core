@@ -1578,13 +1578,13 @@
                             <!-- Connected Micro-Pills & Auth Drawer Trigger -->
                             <div class="island-sub-bar">
                                 <div class="preset-pills-group">
-                                    <button type="button" class="micro-pill" onclick="applySampleTarget('x', '@gM4zFiJCWbz3G4y')">
-                                        <span>X Creator Feed</span>
+                                    <button type="button" class="micro-pill" onclick="applySampleTarget('x', '@NASA')">
+                                        <span>X Media Feed</span>
                                     </button>
-                                    <button type="button" class="micro-pill" onclick="applySampleTarget('pixiv', 'https://www.pixiv.net/users/2188539')">
+                                    <button type="button" class="micro-pill" onclick="applySampleTarget('pixiv', 'https://www.pixiv.net/users/11')">
                                         <span>Pixiv Portfolio</span>
                                     </button>
-                                    <button type="button" class="micro-pill" onclick="applySampleTarget('danbooru', 'original 1girl solo')">
+                                    <button type="button" class="micro-pill" onclick="applySampleTarget('danbooru', 'scenery landscape')">
                                         <span>Danbooru Tags</span>
                                     </button>
                                 </div>
@@ -2185,27 +2185,27 @@
         const SHOWCASE_DATA = {
             x: {
                 platform: "x",
-                target: "@gM4zFiJCWbz3G4y",
+                target: "@NASA",
                 code: `{
   "success": true,
   "mode": "batch",
   "platform": "x",
-  "creator": { "creator_id": "gM4zFiJCWbz3G4y", "display_name": "サンドマン" },
+  "creator": { "creator_id": "NASA", "display_name": "NASA" },
   "posts_count": 24,
   "assets_sample": [
-    "https://pbs.twimg.com/media/G6x9k2XaMAA8v1p?format=jpg&name=orig"
+    "https://pbs.twimg.com/media/example_asset?format=jpg&name=orig"
   ],
   "telemetry": { "latency_ms": 284.1, "assets_per_sec": 119.6, "route": "x:graphql_pool" }
 }`
             },
             pixiv: {
                 platform: "pixiv",
-                target: "https://www.pixiv.net/users/2188539",
+                target: "https://www.pixiv.net/users/11",
                 code: `{
   "success": true,
   "mode": "batch",
   "platform": "pixiv",
-  "creator": { "creator_id": "2188539", "display_name": "Miv4t" },
+  "creator": { "creator_id": "11", "display_name": "pixiv_official" },
   "posts_count": 24,
   "assets_sample": [
     "https://i.pximg.net/img-original/img/2026/10/18/00/12/44/123456789_p0.png"
@@ -2215,7 +2215,7 @@
             },
             mcp: {
                 platform: "auto",
-                target: "original 1girl solo",
+                target: "scenery landscape",
                 code: `// POST https://api.kaedemeta.com/mcp
 {
   "jsonrpc": "2.0",
@@ -2223,7 +2223,7 @@
   "method": "tools/call",
   "params": {
     "name": "extract_creator_feed",
-    "arguments": { "target": "original 1girl solo", "platform": "danbooru", "limit": 24 }
+    "arguments": { "target": "scenery landscape", "platform": "danbooru", "limit": 24 }
   }
 }`
             }
@@ -2723,7 +2723,7 @@ resp = httpx.post(
     "https://api.kaedemeta.com/v1/extract",
     headers={"X-API-Key": "${keyStr}"},
     json={
-        "target": "https://www.pixiv.net/users/2188539",
+        "target": "https://www.pixiv.net/users/12345678",
         "page": 1,
         "limit": 24
     },
@@ -2743,7 +2743,7 @@ for post in data["posts"]:
     "X-API-Key": "${keyStr}"
   },
   body: JSON.stringify({
-    target: "https://www.pixiv.net/users/2188539",
+    target: "https://www.pixiv.net/users/12345678",
     page: 1,
     limit: 24
   })
@@ -2766,7 +2766,7 @@ console.log(data.posts);`;
   -H "Content-Type: application/json" \\
   -H "X-API-Key: ${keyStr}" \\
   -d '{
-    "target": "https://www.pixiv.net/users/2188539",
+    "target": "https://www.pixiv.net/users/12345678",
     "page": 1,
     "limit": 24
   }'`;
