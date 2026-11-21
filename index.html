@@ -3345,6 +3345,8 @@ console.log(await res.json());`;
         let activeHoverInterval = null;
         let activeZipAbortController = null;
         let isZipDownloading = false;
+        let pageCursorMap = {};
+        let currentQuerySignature = "";
 
         function applySampleTarget(platform, target, autoRun = false) {
             selectedPlatformOverride = platform;
@@ -3433,7 +3435,7 @@ console.log(await res.json());`;
             jumpToBatchPage(next);
         }
 
-        function renderBottomPagination(isBatch) {
+        function renderBottomPagination(isBatch, hasMore = true) {
             const bar = document.getElementById("bottomPaginationBar");
             if (!bar) return;
             if (!isBatch) {
@@ -3444,6 +3446,8 @@ console.log(await res.json());`;
             const curPage = Math.max(1, parseInt(document.getElementById("pageInput").value || "1", 10));
             const prevBtn = document.getElementById("bottomPrevPageBtn");
             if (prevBtn) prevBtn.disabled = curPage <= 1;
+            const nextBtn = document.getElementById("bottomNextPageBtn");
+            if (nextBtn) nextBtn.disabled = !hasMore;
 
             const chipsBox = document.getElementById("bottomPageChips");
             if (!chipsBox) return;
@@ -3491,6 +3495,12 @@ console.log(await res.json());`;
             island.classList.add("is-extracting");
             document.getElementById("statusBanner").style.display = "none";
 
+            const querySig = `${platform}|${target}|${currentSortOrder}`;
+            if (querySig !== currentQuerySignature || page === 1) {
+                currentQuerySignature = querySig;
+                pageCursorMap = {};
+            }
+
             try {
                 const payload = {
                     target,
@@ -3499,6 +3509,9 @@ console.log(await res.json());`;
                     limit: 24,
                     sort: currentSortOrder
                 };
+                if (page > 1 && pageCursorMap[page]) {
+                    payload.cursor = pageCursorMap[page];
+                }
                 if (credential) payload.credential = credential;
 
                 const res = await fetch(`${API_BASE}/v1/extract`, {
@@ -3512,6 +3525,10 @@ console.log(await res.json());`;
 
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.detail || `HTTP ${res.status}`);
+
+                if (data.next_cursor) {
+                    pageCursorMap[page + 1] = data.next_cursor;
+                }
 
                 lastRawExtractionData = data;
                 recordSearchHistory(target, platform);
@@ -3550,7 +3567,7 @@ console.log(await res.json());`;
                 `${data.platform.toUpperCase()} · ${data.posts.length} posts · -${data.credits_cost} cr`;
 
             const isBatch = data.mode === "batch";
-            renderBottomPagination(isBatch);
+            renderBottomPagination(isBatch, data.has_more !== false);
 
             document.getElementById("rawJsonOutput").textContent = JSON.stringify(data, null, 2);
 
